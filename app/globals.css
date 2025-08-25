@@ -1,0 +1,137 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Updated to Mirfa brand color system with gold primary and charcoal/slate palette */
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 40 38% 57%;
+  --primary-foreground: 60 10% 8%;
+  --secondary: 215 19% 35%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 210 20% 98%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 40 38% 57%;
+  --accent-foreground: 60 10% 8%;
+  --destructive: 350 89% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --success: 156 72% 31%;
+  --success-foreground: 0 0% 100%;
+  --warning: 32 74% 44%;
+  --warning-foreground: 0 0% 100%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 40 38% 57%;
+  --chart-1: 40 38% 57%;
+  --chart-2: 215 19% 35%;
+  --chart-3: 215 16% 47%;
+  --chart-4: 156 72% 31%;
+  --chart-5: 350 89% 60%;
+  --radius: 0.75rem;
+  --sidebar: 0 0% 100%;
+  --sidebar-foreground: 222 47% 11%;
+  --sidebar-primary: 40 38% 57%;
+  --sidebar-primary-foreground: 60 10% 8%;
+  --sidebar-accent: 40 38% 57%;
+  --sidebar-accent-foreground: 60 10% 8%;
+  --sidebar-border: 214 32% 91%;
+  --sidebar-ring: 40 38% 57%;
+}
+
+.dark {
+  /* Updated dark mode with Mirfa brand colors maintaining contrast ratios */
+  --background: 222 84% 5%;
+  --foreground: 210 40% 98%;
+  --card: 222 84% 5%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222 84% 5%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 40 38% 57%;
+  --primary-foreground: 60 10% 8%;
+  --secondary: 215 19% 35%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217 32% 17%;
+  --muted-foreground: 215 20% 65%;
+  --accent: 40 38% 57%;
+  --accent-foreground: 60 10% 8%;
+  --destructive: 350 89% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --success: 156 72% 31%;
+  --success-foreground: 0 0% 100%;
+  --warning: 32 74% 44%;
+  --warning-foreground: 0 0% 100%;
+  --border: 217 32% 17%;
+  --input: 217 32% 17%;
+  --ring: 40 38% 57%;
+  --chart-1: 40 38% 57%;
+  --chart-2: 215 19% 35%;
+  --chart-3: 215 20% 65%;
+  --chart-4: 156 72% 31%;
+  --chart-5: 350 89% 60%;
+  --sidebar: 222 84% 5%;
+  --sidebar-foreground: 210 40% 98%;
+  --sidebar-primary: 40 38% 57%;
+  --sidebar-primary-foreground: 60 10% 8%;
+  --sidebar-accent: 40 38% 57%;
+  --sidebar-accent-foreground: 60 10% 8%;
+  --sidebar-border: 217 32% 17%;
+  --sidebar-ring: 40 38% 57%;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
