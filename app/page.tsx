@@ -559,7 +559,7 @@ export default function DubaiInvestmentLanding() {
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <Clock className="h-12 w-12 text-primary mb-4" />
-                <CardTitle>Weekly Updates</CardTitle>
+                <CardTitle>Quarterly Updates</CardTitle>
                 <CardDescription>
                   Regular progress reports and financial updates delivered to your inbox
                 </CardDescription>
@@ -681,12 +681,9 @@ export default function DubaiInvestmentLanding() {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
             <div>
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="w-8 h-8 bg-primary rounded-sm flex items-center justify-center">
-                  <span className="text-black font-bold text-sm">M</span>
-                </div>
-                <span className="text-xl font-light">MIRFA</span>
-              </div>
+            <div className="flex items-center">
+            <img src="images/logo.png" alt="Mirfa Logo" className="h-8" />
+          </div>
               <p className="text-gray-400 font-light leading-relaxed">
                 Dubai South G6 development - Exclusive real estate investment opportunity in Dubai's premier business
                 district.
