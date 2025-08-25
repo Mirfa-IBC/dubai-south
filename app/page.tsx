@@ -52,7 +52,7 @@ export default function DubaiInvestmentLanding() {
       location: "Jumeirah Village Circle",
       description:
         "Premium residential development in the heart of JVC featuring modern apartments with world-class amenities and strategic location benefits.",
-      irr: "18.5%",
+      irr: "20.3%",
       investment: "AED 50,000",
       timeline: "24-36 months",
       status: "Investment Closed",
@@ -66,7 +66,7 @@ export default function DubaiInvestmentLanding() {
       location: "Meydan, Dubai",
       description:
         "Exclusive luxury development in prestigious Meydan district offering unparalleled lifestyle amenities and proximity to Dubai's racing heritage.",
-      irr: "22.1%",
+      irr: "30.3%",
       investment: "AED 75,000",
       timeline: "30-42 months",
       status: "Investment Closed",
@@ -80,7 +80,7 @@ export default function DubaiInvestmentLanding() {
       location: "Jumeirah Village Circle",
       description:
         "Second phase of the successful Ashton Park development, offering enhanced design and premium finishes in Dubai's sought-after JVC community.",
-      irr: "19.8%",
+      irr: "23.6%",
       investment: "AED 60,000",
       timeline: "28-40 months",
       status: "Investment Closed",
@@ -94,7 +94,7 @@ export default function DubaiInvestmentLanding() {
       location: "Jumeirah Village Circle",
       description:
         "Flagship residential project featuring contemporary design and comprehensive amenities in one of Dubai's most vibrant communities.",
-      irr: "17.3%",
+      irr: "29.4%",
       investment: "AED 55,000",
       timeline: "24-36 months",
       status: "Investment Closed",
@@ -108,7 +108,7 @@ export default function DubaiInvestmentLanding() {
       location: "Jumeirah Village Circle",
       description:
         "Exclusive townhouse development offering spacious family homes with private gardens and premium community facilities in JVC.",
-      irr: "20.2%",
+      irr: "31.6%",
       investment: "AED 80,000",
       timeline: "32-44 months",
       status: "Investment Closed",
@@ -122,7 +122,7 @@ export default function DubaiInvestmentLanding() {
       location: "Furjan, Dubai",
       description:
         "Mirfa's inaugural UAE project featuring innovative design and sustainable living solutions in the established Furjan community.",
-      irr: "16.9%",
+      irr: "49.8%",
       investment: "AED 45,000",
       timeline: "20-32 months",
       status: "Investment Closed",
