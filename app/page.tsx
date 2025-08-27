@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { ThemeToggle } from "@/components/theme-toggle"
+import RoiCalculator from "@/components/RoiCalculator"
 import {
   Shield,
   TrendingUp,
@@ -261,7 +262,7 @@ export default function DubaiInvestmentLanding() {
               onClick={handleApplyNow}
             >
               SECURE YOUR INVESTMENT
-            </Button>
+          </Button>
         </div>
 
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/60">
@@ -275,7 +276,7 @@ export default function DubaiInvestmentLanding() {
       <section className="py-24 bg-white" id="about">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl md:text-5xl font-light mb-8 text-gray-900">Dubai South G6 Excellence</h2>
+            <h2 className="text-4xl md:text-5xl font-light mb-8 text-gray-900">Dubai South G 6 Excellence</h2>
             <p className="text-lg text-gray-600 font-light leading-relaxed max-w-2xl mx-auto mb-16">
               Dubai South G 6 development represents a unique opportunity to invest in one of the region's most
               promising projects, backed by institutional-grade protections and transparent reporting in Dubai's
@@ -530,6 +531,20 @@ export default function DubaiInvestmentLanding() {
         </div>
       </section>
 
+      <section id="roi" className="relative py-20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl">
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">Investment ROI (AED 50K–1M)</h2>
+            <p className="mt-3 opacity-80">
+              Plan and compare returns using our real schedule. Adjust the amount; cash flows scale automatically.
+            </p>
+          </div>
+          <div className="mt-10">
+            <RoiCalculator />
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="py-20">
         <div className="container mx-auto px-4">
@@ -681,11 +696,14 @@ export default function DubaiInvestmentLanding() {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
             <div>
-            <div className="flex items-center">
-            <img src="images/logo.png" alt="Mirfa Logo" className="h-8" />
-          </div>
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-8 h-8 bg-primary rounded-sm flex items-center justify-center">
+                  <span className="text-black font-bold text-sm">M</span>
+                </div>
+                <span className="text-xl font-light">MIRFA</span>
+              </div>
               <p className="text-gray-400 font-light leading-relaxed">
-                Dubai South G6 development - Exclusive real estate investment opportunity in Dubai's premier business
+                Dubai South G 6 development - Exclusive real estate investment opportunity in Dubai's premier business
                 district.
               </p>
             </div>
