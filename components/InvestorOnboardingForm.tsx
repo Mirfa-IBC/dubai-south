@@ -1,5 +1,5 @@
 "use client"
-
+import { upload } from '@vercel/blob/client'
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -11,24 +11,19 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { ArrowLeft, Upload, CheckCircle, Loader2 } from "lucide-react"
 import { submitInvestorForm } from "@/app/actions/submit-investor-form"
-import { getBlobUploadUrl } from "@/app/actions/get-blob-upload-url"
 
-// --- helper: upload picked file to Vercel Blob and return URL ---
-async function uploadToVercelBlob(file: File) {
-  const { url, id } = await getBlobUploadUrl()
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      "content-type": file.type || "application/octet-stream",
-      "x-vercel-filename": file.name || "upload",
-    },
-    body: file,
-  })
-  if (!res.ok) throw new Error("Blob upload failed")
-  const blobUrl = res.headers.get("Location") || id
-  return { id, blobUrl }
-}
 
+
+
+export async function uploadToVercelBlob(file: File) {
+    const put = await upload(file.name, file, {
+      access: 'private',
+      handleUploadUrl: '/api/kyc/upload', // calls the server route above
+      // multipart: true, // optional
+      // onUploadProgress: ({ uploaded, total }) => console.log(uploaded, total),
+    })
+    return { id: put.pathname, blobUrl: put.url }
+  }
 // Avoid name collision with global FormData
 interface InvestorFormData {
   // Basic Info
