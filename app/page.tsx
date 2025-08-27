@@ -4,8 +4,8 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { ThemeToggle } from "@/components/theme-toggle"
 import RoiCalculator from "@/components/RoiCalculator"
+import InvestorOnboardingForm from "@/components/InvestorOnboardingForm"
 import {
   Shield,
   TrendingUp,
@@ -27,10 +27,8 @@ export default function DubaiInvestmentLanding() {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleApplyNow = () => {
-    window.open("https://form.typeform.com/to/your-typeform-id", "_blank")
+    setIsModalOpen(true)
   }
-
- 
 
   const portfolioProjects = [
     {
@@ -248,28 +246,17 @@ export default function DubaiInvestmentLanding() {
             </div>
           </div>
 
-          {/* <Button
-            size="lg"
-            className="bg-primary hover:bg-primary/90 text-black font-medium px-8 py-3"
+          <Button
+            variant="outline"
+            className="border-white/30 text-white hover:bg-white hover:text-black transition-all bg-transparent"
             onClick={handleApplyNow}
           >
             SECURE YOUR INVESTMENT
-          </Button> */}
-
-          <Button
-              variant="outline"
-              className="border-white/30 text-white hover:bg-white hover:text-black transition-all bg-transparent"
-              onClick={handleApplyNow}
-            >
-              SECURE YOUR INVESTMENT
           </Button>
         </div>
 
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/60">
-          <div className="flex flex-col items-center space-y-2">
-            {/* <span className="text-xs font-light tracking-wider">SCROLL</span> */}
-            {/* <div className="w-px h-12 bg-white/30"></div> */}
-          </div>
+          <div className="flex flex-col items-center space-y-2"></div>
         </div>
       </section>
 
@@ -440,7 +427,8 @@ export default function DubaiInvestmentLanding() {
 
                   <div className="pt-4">
                     {project.status === "Active Investment" ? (
-                      <Button variant="outline"
+                      <Button
+                        variant="outline"
                         className="bg-primary hover:bg-primary/90 text-black font-medium"
                         onClick={handleApplyNow}
                       >
@@ -667,7 +655,12 @@ export default function DubaiInvestmentLanding() {
               Only 20 investment positions available in this exclusive Dubai South G 6 development opportunity.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Button  variant="outline" size="lg" className="bg-accent hover:bg-accent/90 text-lg px-8" onClick={handleApplyNow}>
+              <Button
+                variant="outline"
+                size="lg"
+                className="bg-accent hover:bg-accent/90 text-lg px-8"
+                onClick={handleApplyNow}
+              >
                 Apply for Investment
               </Button>
               <Button variant="outline" size="lg" className="text-lg px-8 bg-transparent">
@@ -735,10 +728,15 @@ export default function DubaiInvestmentLanding() {
             </div>
           </div>
           <div className="border-t border-gray-800 mt-12 pt-8 text-center">
-            <p className="text-gray-500 font-light text-sm">© 2025 MIRFA IBC. All rights reserved. Regulated by DIFC.</p>
+            <p className="text-gray-500 font-light text-sm">
+              © 2025 MIRFA IBC. All rights reserved. Regulated by DIFC.
+            </p>
           </div>
         </div>
       </footer>
+
+      {/* Investor Onboarding Form Modal */}
+      {isModalOpen && <InvestorOnboardingForm onClose={() => setIsModalOpen(false)} />}
     </div>
   )
 }
