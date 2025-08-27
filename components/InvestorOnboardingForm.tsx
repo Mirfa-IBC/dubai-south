@@ -16,8 +16,9 @@ import { submitInvestorForm } from "@/app/actions/submit-investor-form"
 
 
 export async function uploadToVercelBlob(file: File) {
+    console.log("in uploadToVercelBlob");
     const put = await upload(file.name, file, {
-      access: 'private',
+      access: 'public',
       handleUploadUrl: '/api/kyc/upload', // calls the server route above
       // multipart: true, // optional
       // onUploadProgress: ({ uploaded, total }) => console.log(uploaded, total),
@@ -141,11 +142,11 @@ export default function InvestorOnboardingForm({ onClose }: InvestorOnboardingFo
     }
 
     if (step === 3) {
-      if (formData.residency_status === "UAE Resident") {
+      if (formData.residency_status === "resident") {
         if (!formData.eid_number.trim()) newErrors.eid_number = "Emirates ID number is required"
         if (!formData.eid_upload_url) newErrors.eid_upload = "Emirates ID upload is required"
         if (!formData.passport_upload_resident_url) newErrors.passport_upload_resident = "Passport upload is required"
-      } else if (formData.residency_status === "Non-Resident") {
+      } else if (formData.residency_status === "non_resident") {
         if (!formData.nationality.trim()) newErrors.nationality = "Nationality is required"
         if (!formData.passport_number.trim()) newErrors.passport_number = "Passport number is required"
         if (!formData.passport_issue_date) newErrors.passport_issue_date = "Passport issue date is required"
@@ -193,7 +194,9 @@ export default function InvestorOnboardingForm({ onClose }: InvestorOnboardingFo
     file: File | null,
     errorKey: string
   ) => {
+    console.log("uploading");
     if (!file) return
+    
     try {
       const { blobUrl } = await uploadToVercelBlob(file)
       setFormData((prev) => ({
@@ -212,27 +215,27 @@ export default function InvestorOnboardingForm({ onClose }: InvestorOnboardingFo
       setErrors((prev) => ({ ...prev, [errorKey]: "Upload failed. Please try again." }))
     }
   }
-
   const handleSubmit = async () => {
     if (!validateStep(4)) return
     setIsSubmitting(true)
-
+  
     try {
       const fd = new FormData()
-
-      // Add all scalar fields and URLs (File fields are null by design)
+  
       Object.entries(formData).forEach(([key, value]) => {
-        if (value instanceof File) return // skip raw files
+        if (value instanceof File) return
+        if (value === null || value === undefined) return
+  
+        // Don't send empty date strings; server treats missing as null
+        if ((key === "passport_issue_date" || key === "passport_expiry_date") && value === "") return
+  
         if (typeof value === "boolean") fd.append(key, value.toString())
-        else if (value !== null && value !== undefined) fd.append(key, String(value))
+        else fd.append(key, String(value))
       })
-
+  
       const result = await submitInvestorForm(fd)
-      if (result.success) {
-        setIsSubmitted(true)
-      } else {
-        throw new Error(result.error || "Submission failed")
-      }
+      if (result.success) setIsSubmitted(true)
+      else throw new Error(result.error || "Submission failed")
     } catch (error) {
       console.error("Form submission error:", error)
       setErrors({ submit: "Submission failed. Please try again." })
@@ -373,11 +376,11 @@ export default function InvestorOnboardingForm({ onClose }: InvestorOnboardingFo
                   className="mt-2"
                 >
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="UAE Resident" id="uae-resident" />
+                    <RadioGroupItem value="resident" id="uae-resident" />
                     <Label htmlFor="uae-resident">UAE Resident</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Non-Resident" id="non-resident" />
+                    <RadioGroupItem value="non_resident" id="non-resident" />
                     <Label htmlFor="non-resident">Non-Resident</Label>
                   </div>
                 </RadioGroup>
@@ -391,7 +394,7 @@ export default function InvestorOnboardingForm({ onClose }: InvestorOnboardingFo
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-foreground">KYC Documents</h3>
 
-              {formData.residency_status === "UAE Resident" && (
+              {formData.residency_status === "resident" && (
                 <>
                   <div>
                     <Label htmlFor="eid_number">Emirates ID Number *</Label>
@@ -467,7 +470,7 @@ export default function InvestorOnboardingForm({ onClose }: InvestorOnboardingFo
                 </>
               )}
 
-              {formData.residency_status === "Non-Resident" && (
+              {formData.residency_status === "non_resident" && (
                 <>
                   <div>
                     <Label htmlFor="nationality">Nationality *</Label>
@@ -562,11 +565,11 @@ export default function InvestorOnboardingForm({ onClose }: InvestorOnboardingFo
                       className="mt-2"
                     >
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Yes" id="lrs-yes" />
+                        <RadioGroupItem value="yes" id="lrs-yes" />
                         <Label htmlFor="lrs-yes">Yes</Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="No" id="lrs-no" />
+                        <RadioGroupItem value="no" id="lrs-no" />
                         <Label htmlFor="lrs-no">No</Label>
                       </div>
                     </RadioGroup>
