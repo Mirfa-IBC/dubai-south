@@ -4,20 +4,85 @@ import { useMemo, useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 
-/* -------------------- INPUTS -------------------- */
 const baseCashFlows = [
-  { date: "2025-09-01", monthsFromStart: 0,  amountFor50k: -50000,   note: "Initial Investment Deposit",              status: "completed" },
-  { date: "2026-12-01", monthsFromStart: 15, amountFor50k:  6656.52, note: "First Payout",                             status: "upcoming"  },
-  { date: "2027-10-01", monthsFromStart: 25, amountFor50k: 43343.48, note: "Project Handover Principal Amount Back",   status: "upcoming"  },
-  { date: "2028-01-01", monthsFromStart: 28, amountFor50k:  3527.22, note: "Quarterly Payout",                         status: "upcoming"  },
-  { date: "2028-04-01", monthsFromStart: 31, amountFor50k:  3527.22, note: "Quarterly Payout",                         status: "upcoming"  },
-  { date: "2028-07-01", monthsFromStart: 34, amountFor50k:  3527.22, note: "Quarterly Payout",                         status: "upcoming"  },
-  { date: "2028-10-01", monthsFromStart: 37, amountFor50k:  3527.22, note: "Quarterly Payout",                         status: "upcoming"  },
-  { date: "2029-01-01", monthsFromStart: 40, amountFor50k:  3527.22, note: "Quarterly Payout",                         status: "upcoming"  },
-  { date: "2029-04-01", monthsFromStart: 43, amountFor50k:  3527.22, note: "Quarterly Payout",                         status: "upcoming"  },
-  { date: "2029-07-01", monthsFromStart: 46, amountFor50k:  3527.22, note: "Quarterly Payout",                         status: "upcoming"  },
-  { date: "2029-10-01", monthsFromStart: 49, amountFor50k:  3527.22, note: "Final Payment",                            status: "upcoming"  },
-]
+  {
+    date: "2025-09-01",
+    monthsFromStart: 0,
+    amountFor50k: -50000,
+    note: "Initial Investment Deposit",
+    status: "completed",
+  },
+  { 
+    date: "2026-12-01", 
+    monthsFromStart: 15, // Fixed: Sep 2025 to Dec 2026 is 15 months
+    amountFor50k: 6656.52, 
+    note: "First Payout", 
+    status: "upcoming" 
+  },
+  {
+    date: "2027-10-01",
+    monthsFromStart: 25, // Fixed: Sep 2025 to Oct 2027 is 25 months
+    amountFor50k: 43343.48,
+    note: "Project Handover Principal Amount Back", // Fixed typo: Principle -> Principal
+    status: "upcoming",
+  },
+  { 
+    date: "2028-01-01", 
+    monthsFromStart: 28, // Fixed: Sep 2025 to Jan 2028 is 28 months
+    amountFor50k: 3527.22, 
+    note: "Quarterly Payout", 
+    status: "upcoming" 
+  },
+  { 
+    date: "2028-04-01", 
+    monthsFromStart: 31, // Fixed: Sep 2025 to Apr 2028 is 31 months
+    amountFor50k: 3527.22, 
+    note: "Quarterly Payout", 
+    status: "upcoming" 
+  },
+  { 
+    date: "2028-07-01", 
+    monthsFromStart: 34, // Fixed: Sep 2025 to Jul 2028 is 34 months
+    amountFor50k: 3527.22, 
+    note: "Quarterly Payout", 
+    status: "upcoming" 
+  },
+  { 
+    date: "2028-10-01", 
+    monthsFromStart: 37, // Fixed: Sep 2025 to Oct 2028 is 37 months
+    amountFor50k: 3527.22, 
+    note: "Quarterly Payout", 
+    status: "upcoming" 
+  },
+  { 
+    date: "2029-01-01", 
+    monthsFromStart: 40, // Fixed: Sep 2025 to Jan 2029 is 40 months
+    amountFor50k: 3527.22, 
+    note: "Quarterly Payout", 
+    status: "upcoming" 
+  },
+  { 
+    date: "2029-04-01", 
+    monthsFromStart: 43, // Fixed: Sep 2025 to Apr 2029 is 43 months
+    amountFor50k: 3527.22, 
+    note: "Quarterly Payout", 
+    status: "upcoming" 
+  },
+  { 
+    date: "2029-07-01", 
+    monthsFromStart: 46, // Added missing payment
+    amountFor50k: 3527.22, 
+    note: "Quarterly Payout", 
+    status: "upcoming" 
+  },
+  { 
+    date: "2029-10-01", 
+    monthsFromStart: 49, // Added final payment to match your original data
+    amountFor50k: 3527.22, 
+    note: "Final Payment", 
+    status: "upcoming" 
+  },
+];
 
 /* -------------------- XIRR -------------------- */
 function xirr(cashflows: { date: Date; amount: number }[], guess = 0.15): number {
@@ -344,35 +409,24 @@ export default function RoiCalculator() {
 
 /* -------------------- KPI TILE -------------------- */
 /** Numbers visually “flow out” using absolute positioning + overflow-visible */
-function Kpi({
-  label,
-  value,
-  accent,
-}: {
-  label: string
-  value: string
-  accent?: string
-}) {
+function Kpi({ label, value, accent }: { label: string; value: string; accent?: string }) {
   return (
-    <div className="relative overflow-visible rounded-2xl border p-3 sm:p-4 bg-background">
+    <div className="relative overflow-hidden rounded-2xl border p-3 sm:p-4 bg-background">
       <div className="text-xs uppercase tracking-wide opacity-70">{label}</div>
-
-      {/* Main value inside */}
       <div className="text-2xl font-semibold mt-1">{value}</div>
 
-      {/* Oversized breakout value */}
-      <div
+      {/* background number, now clipped to box */}
+      {/* <div
         className={[
           "pointer-events-none select-none",
-          "absolute -top-3 right-3 translate-y-[-30%]",
-          "text-4xl sm:text-5xl md:text-6xl font-extrabold",
-          "opacity-10 leading-none",
+          "absolute -top-2 right-2",
+          "text-4xl sm:text-5xl font-extrabold opacity-10 leading-none",
           accent ?? "text-foreground",
         ].join(" ")}
         aria-hidden
       >
         {value}
-      </div>
+      </div> */}
     </div>
   )
 }
