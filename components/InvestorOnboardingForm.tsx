@@ -1,5 +1,4 @@
 "use client"
-import { upload } from '@vercel/blob/client'
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,18 +12,45 @@ import { ArrowLeft, Upload, CheckCircle, Loader2 } from "lucide-react"
 import { submitInvestorForm } from "@/app/actions/submit-investor-form"
 
 
-
-
 export async function uploadToVercelBlob(file: File) {
-    console.log("in uploadToVercelBlob");
-    const put = await upload(file.name, file, {
-      access: 'public',
-      handleUploadUrl: '/api/kyc/upload', // calls the server route above
-      // multipart: true, // optional
-      // onUploadProgress: ({ uploaded, total }) => console.log(uploaded, total),
-    })
-    return { id: put.pathname, blobUrl: put.url }
+  console.log("in uploadToVercelBlob");
+  
+  // Convert file to base64
+  const fileToBase64 = (file) => {
+      return new Promise((resolve, reject) => {
+          const reader = new FileReader()
+          reader.readAsDataURL(file)
+          reader.onload = () => resolve(reader.result)
+          reader.onerror = error => reject(error)
+      })
   }
+  
+  const fileData = await fileToBase64(file)
+  
+  const response = await fetch('/api/kyc/upload', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          fileName: file.name,
+          fileData: fileData, // base64 string
+          fileType: file.type,
+          fileSize: file.size
+      })
+  })
+  
+  const result = await response.json()
+  
+  if (!response.ok) {
+      throw new Error(result.error || 'Upload failed')
+  }
+  
+  return { 
+      id: result.data.path, 
+      blobUrl: result.data.signedUrl || result.data.publicUrl 
+  }
+}
 // Avoid name collision with global FormData
 interface InvestorFormData {
   // Basic Info

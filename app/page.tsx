@@ -37,7 +37,7 @@ export default function DubaiInvestmentLanding() {
       location: "Dubai South",
       description:
         "Exclusive investment opportunity in Dubai's fastest-growing district featuring premium residential and commercial spaces with world-class amenities.",
-      irr: "20.6%",
+      irr: "20.8%",
       investment: "AED 50,000",
       timeline: "24-36 months",
       status: "Active Investment",
@@ -237,7 +237,7 @@ export default function DubaiInvestmentLanding() {
               </div>
               <div className="flex items-center space-x-2">
                 <span className="text-white/70">TARGET IRR</span>
-                <span className="text-primary font-medium">20.6%</span>
+                <span className="text-primary font-medium">20.8%</span>
               </div>
               <div className="flex items-center space-x-2">
                 <span className="text-white/70">LIMITED TO</span>
@@ -614,7 +614,7 @@ export default function DubaiInvestmentLanding() {
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-2" className="bg-card border rounded-lg px-6">
-                <AccordionTrigger className="text-left">How is the 20.6% IRR target calculated?</AccordionTrigger>
+                <AccordionTrigger className="text-left">How is the 20.8% IRR target calculated?</AccordionTrigger>
                 <AccordionContent>
                   The target IRR is based on conservative market projections, comparable sales data, and our development
                   timeline. This includes rental income during the holding period and capital appreciation upon exit.
