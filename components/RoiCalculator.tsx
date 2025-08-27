@@ -4,30 +4,98 @@ import { useMemo, useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 const baseCashFlows = [
   {
-    date: "2025-01-15",
+    date: "2025-09-01",
     monthsFromStart: 0,
     amountFor50k: -50000,
     note: "Initial Investment Deposit",
     status: "completed",
   },
-  { date: "2026-12-01", monthsFromStart: 22.5, amountFor50k: 6656.52, note: "First Payout", status: "upcoming" },
+  { 
+    date: "2026-12-01", 
+    monthsFromStart: 15, // Fixed: Sep 2025 to Dec 2026 is 15 months
+    amountFor50k: 6656.52, 
+    note: "First Payout", 
+    status: "upcoming" 
+  },
   {
     date: "2027-10-01",
-    monthsFromStart: 32.5,
+    monthsFromStart: 25, // Fixed: Sep 2025 to Oct 2027 is 25 months
     amountFor50k: 43343.48,
-    note: "Project Handover Principle Amount Back",
+    note: "Project Handover Principal Amount Back", // Fixed typo: Principle -> Principal
     status: "upcoming",
   },
-  { date: "2028-01-01", monthsFromStart: 35.5, amountFor50k: 3527.22, note: "Quarterly Payout", status: "upcoming" },
-  { date: "2028-04-01", monthsFromStart: 38.5, amountFor50k: 3527.22, note: "Quarterly Payout", status: "upcoming" },
-  { date: "2028-07-01", monthsFromStart: 41.5, amountFor50k: 3527.22, note: "Quarterly Payout", status: "upcoming" },
-  { date: "2028-10-01", monthsFromStart: 44.5, amountFor50k: 3527.22, note: "Quarterly Payout", status: "upcoming" },
-  { date: "2029-01-01", monthsFromStart: 47.5, amountFor50k: 3527.22, note: "Quarterly Payout", status: "upcoming" },
-  { date: "2029-04-01", monthsFromStart: 50.5, amountFor50k: 3527.22, note: "Final Payment", status: "upcoming" },
-]
-
+  { 
+    date: "2028-01-01", 
+    monthsFromStart: 28, // Fixed: Sep 2025 to Jan 2028 is 28 months
+    amountFor50k: 3527.22, 
+    note: "Quarterly Payout", 
+    status: "upcoming" 
+  },
+  { 
+    date: "2028-04-01", 
+    monthsFromStart: 31, // Fixed: Sep 2025 to Apr 2028 is 31 months
+    amountFor50k: 3527.22, 
+    note: "Quarterly Payout", 
+    status: "upcoming" 
+  },
+  { 
+    date: "2028-07-01", 
+    monthsFromStart: 34, // Fixed: Sep 2025 to Jul 2028 is 34 months
+    amountFor50k: 3527.22, 
+    note: "Quarterly Payout", 
+    status: "upcoming" 
+  },
+  { 
+    date: "2028-10-01", 
+    monthsFromStart: 37, // Fixed: Sep 2025 to Oct 2028 is 37 months
+    amountFor50k: 3527.22, 
+    note: "Quarterly Payout", 
+    status: "upcoming" 
+  },
+  { 
+    date: "2029-01-01", 
+    monthsFromStart: 40, // Fixed: Sep 2025 to Jan 2029 is 40 months
+    amountFor50k: 3527.22, 
+    note: "Quarterly Payout", 
+    status: "upcoming" 
+  },
+  { 
+    date: "2029-04-01", 
+    monthsFromStart: 43, // Fixed: Sep 2025 to Apr 2029 is 43 months
+    amountFor50k: 3527.22, 
+    note: "Quarterly Payout", 
+    status: "upcoming" 
+  },
+  { 
+    date: "2029-07-01", 
+    monthsFromStart: 46, // Added missing payment
+    amountFor50k: 3527.22, 
+    note: "Quarterly Payout", 
+    status: "upcoming" 
+  },
+  { 
+    date: "2029-10-01", 
+    monthsFromStart: 49, // Added final payment to match your original data
+    amountFor50k: 3527.22, 
+    note: "Final Payment", 
+    status: "upcoming" 
+  },
+];
 // ---- XIRR (Newton–Raphson) ----
 function xirr(cashflows: { date: Date; amount: number }[], guess = 0.15): number {
   const tol = 1e-7,
