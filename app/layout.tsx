@@ -11,7 +11,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "Dubai South G 6 Investment | Premium Real Estate Opportunity",
+  title: "Dubai South G6 Investment | Premium Real Estate Opportunity",
   description:
     "Exclusive investment opportunity in Dubai South G 6 development. AED 50,000 minimum investment with 20.6% target IRR. Limited to 20 investors.",
   generator: "v0.app",

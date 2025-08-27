@@ -34,7 +34,7 @@ export default function DubaiInvestmentLanding() {
   const portfolioProjects = [
     {
       id: 1,
-      name: "Dubai South G 6 Development",
+      name: "G6 Dubai South",
       location: "Dubai South",
       description:
         "Exclusive investment opportunity in Dubai's fastest-growing district featuring premium residential and commercial spaces with world-class amenities.",
@@ -275,7 +275,7 @@ export default function DubaiInvestmentLanding() {
       <section className="py-24 bg-white" id="about">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl md:text-5xl font-light mb-8 text-gray-900">Dubai South G 6 Excellence</h2>
+            <h2 className="text-4xl md:text-5xl font-light mb-8 text-gray-900">Dubai South G6 Excellence</h2>
             <p className="text-lg text-gray-600 font-light leading-relaxed max-w-2xl mx-auto mb-16">
               Dubai South G 6 development represents a unique opportunity to invest in one of the region's most
               promising projects, backed by institutional-grade protections and transparent reporting in Dubai's
