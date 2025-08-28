@@ -410,15 +410,30 @@ export default function InvestorOnboardingForm({ onClose = () => {} }) {
                         }
                         className="hidden"
                       />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => document.getElementById("eid_upload")?.click()}
-                        className={`w-full h-12 ${errors.eid_upload ? "border-red-500 hover:border-red-600" : "hover:bg-blue-50 dark:hover:bg-blue-950/20 hover:border-blue-300"} ${formData.eid_upload_url ? "bg-green-50 border-green-300 text-green-700 dark:bg-green-950/20 dark:border-green-700 dark:text-green-400" : ""}`}
-                      >
-                        <Upload className="h-4 w-4 mr-2" />
-                        {formData.eid_upload_url ? "✓ Emirates ID Uploaded" : "Upload Emirates ID"}
-                      </Button>
+                      <div className="space-y-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => document.getElementById("eid_upload")?.click()}
+                          className={`w-full h-12 ${errors.eid_upload ? "border-red-500 hover:border-red-600" : "hover:bg-blue-50 dark:hover:bg-blue-950/20 hover:border-blue-300"} ${formData.eid_upload_url ? "bg-green-50 border-green-300 text-green-700 dark:bg-green-950/20 dark:border-green-700 dark:text-green-400" : ""}`}
+                        >
+                          <Upload className="h-4 w-4 mr-2" />
+                          {formData.eid_upload_url ? "✓ Emirates ID Uploaded" : "Upload Emirates ID"}
+                        </Button>
+                        {formData.eid_upload_url && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={() => window.open(formData.eid_upload_url, '_blank')}
+                            className="w-full text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950/20"
+                          >
+                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Download Uploaded File
+                          </Button>
+                        )}
+                      </div>
                     </div>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Emirates ID (front & back).</p>
                     {errors.eid_upload && <p className="text-sm text-red-500 mt-1 font-medium">{errors.eid_upload}</p>}
@@ -441,15 +456,30 @@ export default function InvestorOnboardingForm({ onClose = () => {} }) {
                         }
                         className="hidden"
                       />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => document.getElementById("passport_upload_resident")?.click()}
-                        className={`w-full h-12 ${errors.passport_upload_resident ? "border-red-500 hover:border-red-600" : "hover:bg-blue-50 dark:hover:bg-blue-950/20 hover:border-blue-300"} ${formData.passport_upload_resident_url ? "bg-green-50 border-green-300 text-green-700 dark:bg-green-950/20 dark:border-green-700 dark:text-green-400" : ""}`}
-                      >
-                        <Upload className="h-4 w-4 mr-2" />
-                        {formData.passport_upload_resident_url ? "✓ Passport Uploaded" : "Upload Passport"}
-                      </Button>
+                      <div className="space-y-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => document.getElementById("passport_upload_resident")?.click()}
+                          className={`w-full h-12 ${errors.passport_upload_resident ? "border-red-500 hover:border-red-600" : "hover:bg-blue-50 dark:hover:bg-blue-950/20 hover:border-blue-300"} ${formData.passport_upload_resident_url ? "bg-green-50 border-green-300 text-green-700 dark:bg-green-950/20 dark:border-green-700 dark:text-green-400" : ""}`}
+                        >
+                          <Upload className="h-4 w-4 mr-2" />
+                          {formData.passport_upload_resident_url ? "✓ Passport Uploaded" : "Upload Passport"}
+                        </Button>
+                        {formData.passport_upload_resident_url && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={() => window.open(formData.passport_upload_resident_url, '_blank')}
+                            className="w-full text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950/20"
+                          >
+                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Download Uploaded File
+                          </Button>
+                        )}
+                      </div>
                     </div>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Passport photo page.</p>
                     {errors.passport_upload_resident && (
