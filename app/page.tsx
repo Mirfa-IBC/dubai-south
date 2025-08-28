@@ -263,9 +263,9 @@ export default function DubaiInvestmentLanding() {
       <section className="py-24 bg-white" id="about">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl md:text-5xl font-light mb-8 text-gray-900">Dubai South G 6 Excellence</h2>
+            <h2 className="text-4xl md:text-5xl font-light mb-8 text-gray-900"> G6 Excellence Dubai South</h2>
             <p className="text-lg text-gray-600 font-light leading-relaxed max-w-2xl mx-auto mb-16">
-              Dubai South G 6 development represents a unique opportunity to invest in one of the region's most
+              G6 Dubai South  development represents a unique opportunity to invest in one of the region's most
               promising projects, backed by institutional-grade protections and transparent reporting in Dubai's
               fastest-growing district.
             </p>
@@ -510,7 +510,7 @@ export default function DubaiInvestmentLanding() {
 
             {/* CTA Button */}
             <div className="text-center mt-12">
-              <Button size="lg" className="bg-accent hover:bg-accent/90 text-lg px-8" onClick={handleApplyNow}>
+              <Button variant="outline" size="lg" className="bg-accent hover:bg-accent/90 text-lg px-8" onClick={handleApplyNow}>
                 Start Your Investment Journey
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -606,42 +606,30 @@ export default function DubaiInvestmentLanding() {
               </p>
             </div>
             <Accordion type="single" collapsible className="space-y-4">
-              <AccordionItem value="item-1" className="bg-card border rounded-lg px-6">
-                <AccordionTrigger className="text-left">What is the minimum investment amount?</AccordionTrigger>
-                <AccordionContent>
-                  The minimum investment amount is AED 50,000. This allows us to maintain an exclusive group of
-                  sophisticated investors while ensuring meaningful participation in the project.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-2" className="bg-card border rounded-lg px-6">
-                <AccordionTrigger className="text-left">How is the 20.8% IRR target calculated?</AccordionTrigger>
-                <AccordionContent>
-                  The target IRR is based on conservative market projections, comparable sales data, and our development
-                  timeline. This includes rental income during the holding period and capital appreciation upon exit.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-3" className="bg-card border rounded-lg px-6">
-                <AccordionTrigger className="text-left">What protections are in place for investors?</AccordionTrigger>
-                <AccordionContent>
-                  We use a DIFC SPV structure for regulatory protection, escrow accounts for fund security, and provide
-                  weekly progress updates. All investments are backed by tangible real estate assets.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-4" className="bg-card border rounded-lg px-6">
-                <AccordionTrigger className="text-left">What is the expected investment timeline?</AccordionTrigger>
-                <AccordionContent>
-                  The project timeline is 24-36 months from initial investment to exit. This includes development
-                  completion, stabilization period, and strategic exit to maximize returns.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-5" className="bg-card border rounded-lg px-6">
-                <AccordionTrigger className="text-left">Can international investors participate?</AccordionTrigger>
-                <AccordionContent>
-                  Yes, we welcome international investors. Our DIFC structure accommodates global participation with
-                  proper compliance and documentation requirements.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+  {[
+    { v: "item-1", q: "What is the minimum investment amount?", a: "The minimum investment amount is AED 50,000..." },
+    { v: "item-2", q: "How is the 20.8% IRR target calculated?", a: "The target IRR is based on conservative market projections..." },
+    { v: "item-3", q: "What protections are in place for investors?", a: "We use a DIFC SPV structure, escrow accounts..." },
+    { v: "item-4", q: "What is the expected investment timeline?", a: "24–36 months from initial investment to exit..." },
+    { v: "item-5", q: "Can international investors participate?", a: "Yes. Our DIFC structure accommodates global participation..." },
+  ].map(({ v, q, a }) => (
+    <AccordionItem
+      key={v}
+      value={v}
+      className="rounded-2xl border bg-card shadow-sm transition-all hover:shadow-md overflow-hidden"
+    >
+      <AccordionTrigger className="px-6 py-4 text-left aria-expanded:font-medium data-[state=open]:text-foreground">
+        <span className="flex-1">{q}</span>
+        <span className="transition-transform duration-200 data-[state=open]:rotate-180" />
+      </AccordionTrigger>
+
+      {/* animated content; keep overflow-hidden for clean rounded corners */}
+      <AccordionContent className="px-6 pb-5 text-muted-foreground leading-relaxed overflow-hidden">
+        {a}
+      </AccordionContent>
+    </AccordionItem>
+  ))}
+</Accordion>
           </div>
         </div>
       </section>
@@ -672,20 +660,7 @@ export default function DubaiInvestmentLanding() {
         </Button>
 
         {/* Call CTA */}
-        <Button
-          asChild
-          variant="outline"
-          size="lg"
-          className="text-lg px-8 bg-transparent"
-        >
-          <a
-            href="tel:+97180064732"
-            aria-label="Call +971 800 MIRFA to schedule a consultation"
-            data-analytics="cta-schedule-call"
-          >
-            Schedule Consultation
-          </a>
-        </Button>
+
 
         {/* WhatsApp CTA (optional but recommended) */}
         <Button
@@ -760,10 +735,12 @@ export default function DubaiInvestmentLanding() {
           <div className="w-8 h-8 bg-primary rounded-sm flex items-center justify-center">
             <span className="text-black font-bold text-sm">M</span>
           </div>
-          <span className="text-xl font-light">MIRFA</span>
+          <div className="flex items-center">
+            <img src="images/logo.png" alt="Mirfa Logo" className="h-8" />
+          </div>
         </div>
         <p className="text-gray-400 font-light leading-relaxed">
-          Dubai South G 6 development – Exclusive real estate investment
+          G6 Dubai South development – Exclusive real estate investment
           opportunity in Dubai&apos;s premier business district.
         </p>
       </div>
