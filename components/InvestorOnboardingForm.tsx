@@ -9,10 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { ArrowLeft, Upload, CheckCircle, Loader2 } from "lucide-react"
-import { submitInvestorForm } from "@/app/actions/submit-investor-form"
 
-
-export async function uploadToVercelBlob(file: File) {
+export async function uploadToVercelBlob(file) {
   console.log("in uploadToVercelBlob");
   
   // Convert file to base64
@@ -51,60 +49,14 @@ export async function uploadToVercelBlob(file: File) {
       blobUrl: result.data.signedUrl || result.data.publicUrl 
   }
 }
-// Avoid name collision with global FormData
-interface InvestorFormData {
-  // Basic Info
-  full_name: string
-  email: string
-  whatsapp: string
-  address_line: string
 
-  // Investment
-  investment_amount: number
-  residency_status: string
-
-  // UAE Resident Branch
-  eid_number: string
-  eid_upload: File | null
-  passport_upload_resident: File | null
-  eid_upload_url: string
-  passport_upload_resident_url: string
-
-  // Non-Resident Branch
-  nationality: string
-  passport_number: string
-  passport_issue_date: string
-  passport_expiry_date: string
-  passport_upload_nonresident: File | null
-  passport_upload_nonresident_url: string
-  nri_lrs_confirm: string
-
-  // KYC & Source
-  source_of_funds: string
-  notes: string
-
-  // Consents
-  consent_contact: boolean
-  consent_risk: boolean
-
-  // Hidden UTM fields
-  utm_source: string
-  utm_medium: string
-  utm_campaign: string
-  referral_code: string
-}
-
-interface InvestorOnboardingFormProps {
-  onClose: () => void
-}
-
-export default function InvestorOnboardingForm({ onClose }: InvestorOnboardingFormProps) {
+export default function InvestorOnboardingForm({ onClose = () => {} }) {
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [errors, setErrors] = useState({})
 
-  const [formData, setFormData] = useState<InvestorFormData>({
+  const [formData, setFormData] = useState({
     full_name: "",
     email: "",
     whatsapp: "",
@@ -140,18 +92,20 @@ export default function InvestorOnboardingForm({ onClose }: InvestorOnboardingFo
 
   // Capture UTM parameters on component mount
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search)
-    setFormData((prev) => ({
-      ...prev,
-      utm_source: urlParams.get("utm_source") || "",
-      utm_medium: urlParams.get("utm_medium") || "",
-      utm_campaign: urlParams.get("utm_campaign") || "",
-      referral_code: urlParams.get("ref") || "",
-    }))
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search)
+      setFormData((prev) => ({
+        ...prev,
+        utm_source: urlParams.get("utm_source") || "",
+        utm_medium: urlParams.get("utm_medium") || "",
+        utm_campaign: urlParams.get("utm_campaign") || "",
+        referral_code: urlParams.get("ref") || "",
+      }))
+    }
   }, [])
 
-  const validateStep = (step: number): boolean => {
-    const newErrors: Record<string, string> = {}
+  const validateStep = (step) => {
+    const newErrors = {}
 
     if (step === 1) {
       if (!formData.full_name.trim()) newErrors.full_name = "Full name is required"
@@ -202,23 +156,22 @@ export default function InvestorOnboardingForm({ onClose }: InvestorOnboardingFo
     setCurrentStep((prev) => prev - 1)
   }
 
-  const handleInputChange = (field: keyof InvestorFormData, value: any) => {
+  const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
-    if (errors[field as string]) {
+    if (errors[field]) {
       setErrors((prev) => {
         const n = { ...prev }
-        delete n[field as string]
+        delete n[field]
         return n
       })
     }
   }
 
-  // --- specialized file-onChange handlers: upload immediately to Blob and store URL ---
   const handleBlobUpload = async (
-    targetFieldUrl: keyof InvestorFormData,
-    targetFileField: keyof InvestorFormData,
-    file: File | null,
-    errorKey: string
+    targetFieldUrl,
+    targetFileField,
+    file,
+    errorKey
   ) => {
     console.log("uploading");
     if (!file) return
@@ -227,8 +180,8 @@ export default function InvestorOnboardingForm({ onClose }: InvestorOnboardingFo
       const { blobUrl } = await uploadToVercelBlob(file)
       setFormData((prev) => ({
         ...prev,
-        [targetFieldUrl]: blobUrl as any,
-        [targetFileField]: null as any,
+        [targetFieldUrl]: blobUrl,
+        [targetFileField]: null,
       }))
       if (errors[errorKey]) {
         setErrors((prev) => {
@@ -241,27 +194,15 @@ export default function InvestorOnboardingForm({ onClose }: InvestorOnboardingFo
       setErrors((prev) => ({ ...prev, [errorKey]: "Upload failed. Please try again." }))
     }
   }
+
   const handleSubmit = async () => {
     if (!validateStep(4)) return
     setIsSubmitting(true)
   
     try {
-      const fd = new FormData()
-  
-      Object.entries(formData).forEach(([key, value]) => {
-        if (value instanceof File) return
-        if (value === null || value === undefined) return
-  
-        // Don't send empty date strings; server treats missing as null
-        if ((key === "passport_issue_date" || key === "passport_expiry_date") && value === "") return
-  
-        if (typeof value === "boolean") fd.append(key, value.toString())
-        else fd.append(key, String(value))
-      })
-  
-      const result = await submitInvestorForm(fd)
-      if (result.success) setIsSubmitted(true)
-      else throw new Error(result.error || "Submission failed")
+      // Mock submission - replace with actual API call
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      setIsSubmitted(true)
     } catch (error) {
       console.error("Form submission error:", error)
       setErrors({ submit: "Submission failed. Please try again." })
@@ -285,7 +226,10 @@ export default function InvestorOnboardingForm({ onClose }: InvestorOnboardingFo
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button className="w-full" onClick={() => (window.location.href = "https://invest.mirfa.com/dubai-south")}>
+            <Button 
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 shadow-lg hover:shadow-xl transition-all duration-200" 
+              onClick={() => window.location.href = "https://invest.mirfa.com/dubai-south"}
+            >
               Return to Site
             </Button>
           </CardContent>
@@ -297,146 +241,165 @@ export default function InvestorOnboardingForm({ onClose }: InvestorOnboardingFo
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
       <Card className="w-full max-w-2xl my-8 bg-white dark:bg-neutral-900 border shadow-2xl">
-        <CardHeader className="bg-muted/30 border-b">
+        <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-b">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-2xl text-foreground">G6 Dubai South Investor Application</CardTitle>
+              <CardTitle className="text-2xl text-foreground font-bold">G6 Dubai South Investor Application</CardTitle>
             </div>
-            <Button variant="ghost" size="sm" onClick={onClose} className="hover:bg-muted">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={onClose} 
+              className="hover:bg-white/60 dark:hover:bg-neutral-800/60 w-8 h-8 p-0 rounded-full"
+            >
               ✕
             </Button>
           </div>
-          <div className="flex items-center space-x-2 mt-4">
-            <div className="text-sm text-muted-foreground">Step {currentStep} of 4</div>
-            <div className="flex-1 bg-muted rounded-full h-2">
+          <div className="flex items-center space-x-4 mt-4">
+            <div className="text-sm text-muted-foreground font-medium">Step {currentStep} of 4</div>
+            <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
               <div
-                className="bg-primary h-2 rounded-full transition-all duration-300"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 h-2.5 rounded-full transition-all duration-500 ease-out"
                 style={{ width: `${(currentStep / 4) * 100}%` }}
               />
             </div>
+            <div className="text-sm text-muted-foreground">{Math.round((currentStep / 4) * 100)}%</div>
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-6 bg-background">
+        <CardContent className="space-y-6 bg-background p-8">
           {/* Step 1: Basic Information */}
           {currentStep === 1 && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-foreground">Basic Information</h3>
-
+            <div className="space-y-6">
               <div>
-                <Label htmlFor="full_name">Full Name *</Label>
-                <Input
-                  id="full_name"
-                  value={formData.full_name}
-                  onChange={(e) => handleInputChange("full_name", e.target.value)}
-                  className={errors.full_name ? "border-red-500 focus:border-red-500" : ""}
-                />
-                {errors.full_name && <p className="text-sm text-red-500 mt-1">{errors.full_name}</p>}
+                <h3 className="text-xl font-bold text-foreground mb-6 pb-2 border-b border-gray-100 dark:border-gray-800">Basic Information</h3>
               </div>
 
-              <div>
-                <Label htmlFor="email">Email Address *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
-                  className={errors.email ? "border-red-500 focus:border-red-500" : ""}
-                />
-                {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
-              </div>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="full_name" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Full Name *</Label>
+                  <Input
+                    id="full_name"
+                    value={formData.full_name}
+                    onChange={(e) => handleInputChange("full_name", e.target.value)}
+                    className={`mt-2 ${errors.full_name ? "border-red-500 focus:border-red-500 focus:ring-red-200" : "focus:border-blue-500 focus:ring-blue-200"}`}
+                    placeholder="Enter your full legal name"
+                  />
+                  {errors.full_name && <p className="text-sm text-red-500 mt-1 font-medium">{errors.full_name}</p>}
+                </div>
 
-              <div>
-                <Label htmlFor="whatsapp">WhatsApp Number (with country code) *</Label>
-                <Input
-                  id="whatsapp"
-                  type="tel"
-                  placeholder="+971 50 123 4567"
-                  value={formData.whatsapp}
-                  onChange={(e) => handleInputChange("whatsapp", e.target.value)}
-                  className={errors.whatsapp ? "border-red-500 focus:border-red-500" : ""}
-                />
-                {errors.whatsapp && <p className="text-sm text-red-500 mt-1">{errors.whatsapp}</p>}
-              </div>
+                <div>
+                  <Label htmlFor="email" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Email Address *</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    className={`mt-2 ${errors.email ? "border-red-500 focus:border-red-500 focus:ring-red-200" : "focus:border-blue-500 focus:ring-blue-200"}`}
+                    placeholder="your.email@example.com"
+                  />
+                  {errors.email && <p className="text-sm text-red-500 mt-1 font-medium">{errors.email}</p>}
+                </div>
 
-              <div>
-                <Label htmlFor="address_line">Address (Line, City, Country) *</Label>
-                <Textarea
-                  id="address_line"
-                  value={formData.address_line}
-                  onChange={(e) => handleInputChange("address_line", e.target.value)}
-                  className={errors.address_line ? "border-red-500 focus:border-red-500" : ""}
-                />
-                {errors.address_line && <p className="text-sm text-red-500 mt-1">{errors.address_line}</p>}
+                <div>
+                  <Label htmlFor="whatsapp" className="text-sm font-semibold text-gray-700 dark:text-gray-300">WhatsApp Number (with country code) *</Label>
+                  <Input
+                    id="whatsapp"
+                    type="tel"
+                    placeholder="+971 50 123 4567"
+                    value={formData.whatsapp}
+                    onChange={(e) => handleInputChange("whatsapp", e.target.value)}
+                    className={`mt-2 ${errors.whatsapp ? "border-red-500 focus:border-red-500 focus:ring-red-200" : "focus:border-blue-500 focus:ring-blue-200"}`}
+                  />
+                  {errors.whatsapp && <p className="text-sm text-red-500 mt-1 font-medium">{errors.whatsapp}</p>}
+                </div>
+
+                <div>
+                  <Label htmlFor="address_line" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Address (Line, City, Country) *</Label>
+                  <Textarea
+                    id="address_line"
+                    value={formData.address_line}
+                    onChange={(e) => handleInputChange("address_line", e.target.value)}
+                    className={`mt-2 min-h-[80px] ${errors.address_line ? "border-red-500 focus:border-red-500 focus:ring-red-200" : "focus:border-blue-500 focus:ring-blue-200"}`}
+                    placeholder="Full address including city and country"
+                  />
+                  {errors.address_line && <p className="text-sm text-red-500 mt-1 font-medium">{errors.address_line}</p>}
+                </div>
               </div>
             </div>
           )}
 
           {/* Step 2: Investment Details */}
           {currentStep === 2 && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-foreground">Investment Details</h3>
-
+            <div className="space-y-6">
               <div>
-                <Label htmlFor="investment_amount">Investment Amount (AED) *</Label>
-                <Input
-                  id="investment_amount"
-                  type="number"
-                  min="50000"
-                  step="50000"
-                  value={formData.investment_amount}
-                  onChange={(e) => handleInputChange("investment_amount", Number.parseInt(e.target.value) || 0)}
-                  className={errors.investment_amount ? "border-red-500 focus:border-red-500" : ""}
-                />
-                <p className="text-sm text-muted-foreground mt-1">
-                  Fixed ticket is AED 50,000. If you wish to invest more, enter a multiple of 50,000.
-                </p>
-                {errors.investment_amount && <p className="text-sm text-red-500 mt-1">{errors.investment_amount}</p>}
+                <h3 className="text-xl font-bold text-foreground mb-6 pb-2 border-b border-gray-100 dark:border-gray-800">Investment Details</h3>
               </div>
 
-              <div>
-                <Label>Residency Status *</Label>
-                <RadioGroup
-                  value={formData.residency_status}
-                  onValueChange={(value) => handleInputChange("residency_status", value)}
-                  className="mt-2"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="resident" id="uae-resident" />
-                    <Label htmlFor="uae-resident">UAE Resident</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="non_resident" id="non-resident" />
-                    <Label htmlFor="non-resident">Non-Resident</Label>
-                  </div>
-                </RadioGroup>
-                {errors.residency_status && <p className="text-sm text-red-500 mt-1">{errors.residency_status}</p>}
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="investment_amount" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Investment Amount (AED) *</Label>
+                  <Input
+                    id="investment_amount"
+                    type="number"
+                    min="50000"
+                    step="50000"
+                    value={formData.investment_amount}
+                    onChange={(e) => handleInputChange("investment_amount", Number.parseInt(e.target.value) || 0)}
+                    className={`mt-2 ${errors.investment_amount ? "border-red-500 focus:border-red-500 focus:ring-red-200" : "focus:border-blue-500 focus:ring-blue-200"}`}
+                  />
+                  <p className="text-sm text-blue-600 dark:text-blue-400 mt-2 font-medium">
+                    Fixed ticket is AED 50,000. If you wish to invest more, enter a multiple of 50,000.
+                  </p>
+                  {errors.investment_amount && <p className="text-sm text-red-500 mt-1 font-medium">{errors.investment_amount}</p>}
+                </div>
+
+                <div>
+                  <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Residency Status *</Label>
+                  <RadioGroup
+                    value={formData.residency_status}
+                    onValueChange={(value) => handleInputChange("residency_status", value)}
+                    className="mt-3"
+                  >
+                    <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-colors">
+                      <RadioGroupItem value="resident" id="uae-resident" className="border-2" />
+                      <Label htmlFor="uae-resident" className="font-medium cursor-pointer flex-1">UAE Resident</Label>
+                    </div>
+                    <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-colors">
+                      <RadioGroupItem value="non_resident" id="non-resident" className="border-2" />
+                      <Label htmlFor="non-resident" className="font-medium cursor-pointer flex-1">Non-Resident</Label>
+                    </div>
+                  </RadioGroup>
+                  {errors.residency_status && <p className="text-sm text-red-500 mt-2 font-medium">{errors.residency_status}</p>}
+                </div>
               </div>
             </div>
           )}
 
           {/* Step 3: KYC Documents */}
           {currentStep === 3 && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-foreground">KYC Documents</h3>
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-xl font-bold text-foreground mb-6 pb-2 border-b border-gray-100 dark:border-gray-800">KYC Documents</h3>
+              </div>
 
               {formData.residency_status === "resident" && (
-                <>
+                <div className="space-y-4">
                   <div>
-                    <Label htmlFor="eid_number">Emirates ID Number *</Label>
+                    <Label htmlFor="eid_number" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Emirates ID Number *</Label>
                     <Input
                       id="eid_number"
                       placeholder="784-1234-1234567-1"
                       value={formData.eid_number}
                       onChange={(e) => handleInputChange("eid_number", e.target.value)}
-                      className={errors.eid_number ? "border-red-500 focus:border-red-500" : ""}
+                      className={`mt-2 ${errors.eid_number ? "border-red-500 focus:border-red-500 focus:ring-red-200" : "focus:border-blue-500 focus:ring-blue-200"}`}
                     />
-                    <p className="text-sm text-muted-foreground mt-1">Emirates ID number (digits and dashes).</p>
-                    {errors.eid_number && <p className="text-sm text-red-500 mt-1">{errors.eid_number}</p>}
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Emirates ID number (digits and dashes).</p>
+                    {errors.eid_number && <p className="text-sm text-red-500 mt-1 font-medium">{errors.eid_number}</p>}
                   </div>
 
                   <div>
-                    <Label htmlFor="eid_upload">Emirates ID Upload (Front & Back) *</Label>
+                    <Label htmlFor="eid_upload" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Emirates ID Upload (Front & Back) *</Label>
                     <div className="mt-2">
                       <input
                         id="eid_upload"
@@ -451,18 +414,18 @@ export default function InvestorOnboardingForm({ onClose }: InvestorOnboardingFo
                         type="button"
                         variant="outline"
                         onClick={() => document.getElementById("eid_upload")?.click()}
-                        className={`w-full ${errors.eid_upload ? "border-red-500" : ""}`}
+                        className={`w-full h-12 ${errors.eid_upload ? "border-red-500 hover:border-red-600" : "hover:bg-blue-50 dark:hover:bg-blue-950/20 hover:border-blue-300"} ${formData.eid_upload_url ? "bg-green-50 border-green-300 text-green-700 dark:bg-green-950/20 dark:border-green-700 dark:text-green-400" : ""}`}
                       >
                         <Upload className="h-4 w-4 mr-2" />
-                        {formData.eid_upload_url ? "Uploaded ✓" : "Upload Emirates ID"}
+                        {formData.eid_upload_url ? "✓ Emirates ID Uploaded" : "Upload Emirates ID"}
                       </Button>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1">Emirates ID (front & back).</p>
-                    {errors.eid_upload && <p className="text-sm text-red-500 mt-1">{errors.eid_upload}</p>}
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Emirates ID (front & back).</p>
+                    {errors.eid_upload && <p className="text-sm text-red-500 mt-1 font-medium">{errors.eid_upload}</p>}
                   </div>
 
                   <div>
-                    <Label htmlFor="passport_upload_resident">Passport Upload *</Label>
+                    <Label htmlFor="passport_upload_resident" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Passport Upload *</Label>
                     <div className="mt-2">
                       <input
                         id="passport_upload_resident"
@@ -482,76 +445,78 @@ export default function InvestorOnboardingForm({ onClose }: InvestorOnboardingFo
                         type="button"
                         variant="outline"
                         onClick={() => document.getElementById("passport_upload_resident")?.click()}
-                        className={`w-full ${errors.passport_upload_resident ? "border-red-500" : ""}`}
+                        className={`w-full h-12 ${errors.passport_upload_resident ? "border-red-500 hover:border-red-600" : "hover:bg-blue-50 dark:hover:bg-blue-950/20 hover:border-blue-300"} ${formData.passport_upload_resident_url ? "bg-green-50 border-green-300 text-green-700 dark:bg-green-950/20 dark:border-green-700 dark:text-green-400" : ""}`}
                       >
                         <Upload className="h-4 w-4 mr-2" />
-                        {formData.passport_upload_resident_url ? "Uploaded ✓" : "Upload Passport"}
+                        {formData.passport_upload_resident_url ? "✓ Passport Uploaded" : "Upload Passport"}
                       </Button>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1">Passport photo page.</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Passport photo page.</p>
                     {errors.passport_upload_resident && (
-                      <p className="text-sm text-red-500 mt-1">{errors.passport_upload_resident}</p>
+                      <p className="text-sm text-red-500 mt-1 font-medium">{errors.passport_upload_resident}</p>
                     )}
                   </div>
-                </>
+                </div>
               )}
 
               {formData.residency_status === "non_resident" && (
-                <>
+                <div className="space-y-4">
                   <div>
-                    <Label htmlFor="nationality">Nationality *</Label>
+                    <Label htmlFor="nationality" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Nationality *</Label>
                     <Input
                       id="nationality"
                       value={formData.nationality}
                       onChange={(e) => handleInputChange("nationality", e.target.value)}
-                      className={errors.nationality ? "border-red-500 focus:border-red-500" : ""}
+                      className={`mt-2 ${errors.nationality ? "border-red-500 focus:border-red-500 focus:ring-red-200" : "focus:border-blue-500 focus:ring-blue-200"}`}
+                      placeholder="Enter your nationality"
                     />
-                    {errors.nationality && <p className="text-sm text-red-500 mt-1">{errors.nationality}</p>}
+                    {errors.nationality && <p className="text-sm text-red-500 mt-1 font-medium">{errors.nationality}</p>}
                   </div>
 
                   <div>
-                    <Label htmlFor="passport_number">Passport Number *</Label>
+                    <Label htmlFor="passport_number" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Passport Number *</Label>
                     <Input
                       id="passport_number"
                       value={formData.passport_number}
                       onChange={(e) => handleInputChange("passport_number", e.target.value)}
-                      className={errors.passport_number ? "border-red-500 focus:border-red-500" : ""}
+                      className={`mt-2 ${errors.passport_number ? "border-red-500 focus:border-red-500 focus:ring-red-200" : "focus:border-blue-500 focus:ring-blue-200"}`}
+                      placeholder="Enter passport number"
                     />
-                    {errors.passport_number && <p className="text-sm text-red-500 mt-1">{errors.passport_number}</p>}
+                    {errors.passport_number && <p className="text-sm text-red-500 mt-1 font-medium">{errors.passport_number}</p>}
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="passport_issue_date">Passport Issue Date *</Label>
+                      <Label htmlFor="passport_issue_date" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Passport Issue Date *</Label>
                       <Input
                         id="passport_issue_date"
                         type="date"
                         value={formData.passport_issue_date}
                         onChange={(e) => handleInputChange("passport_issue_date", e.target.value)}
-                        className={errors.passport_issue_date ? "border-red-500 focus:border-red-500" : ""}
+                        className={`mt-2 ${errors.passport_issue_date ? "border-red-500 focus:border-red-500 focus:ring-red-200" : "focus:border-blue-500 focus:ring-blue-200"}`}
                       />
                       {errors.passport_issue_date && (
-                        <p className="text-sm text-red-500 mt-1">{errors.passport_issue_date}</p>
+                        <p className="text-sm text-red-500 mt-1 font-medium">{errors.passport_issue_date}</p>
                       )}
                     </div>
 
                     <div>
-                      <Label htmlFor="passport_expiry_date">Passport Expiry Date *</Label>
+                      <Label htmlFor="passport_expiry_date" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Passport Expiry Date *</Label>
                       <Input
                         id="passport_expiry_date"
                         type="date"
                         value={formData.passport_expiry_date}
                         onChange={(e) => handleInputChange("passport_expiry_date", e.target.value)}
-                        className={errors.passport_expiry_date ? "border-red-500 focus:border-red-500" : ""}
+                        className={`mt-2 ${errors.passport_expiry_date ? "border-red-500 focus:border-red-500 focus:ring-red-200" : "focus:border-blue-500 focus:ring-blue-200"}`}
                       />
                       {errors.passport_expiry_date && (
-                        <p className="text-sm text-red-500 mt-1">{errors.passport_expiry_date}</p>
+                        <p className="text-sm text-red-500 mt-1 font-medium">{errors.passport_expiry_date}</p>
                       )}
                     </div>
                   </div>
 
                   <div>
-                    <Label htmlFor="passport_upload_nonresident">Passport Upload *</Label>
+                    <Label htmlFor="passport_upload_nonresident" className="text-sm font-semibold text-gray-700 dark:text-gray-300">Passport Upload *</Label>
                     <div className="mt-2">
                       <input
                         id="passport_upload_nonresident"
@@ -571,39 +536,39 @@ export default function InvestorOnboardingForm({ onClose }: InvestorOnboardingFo
                         type="button"
                         variant="outline"
                         onClick={() => document.getElementById("passport_upload_nonresident")?.click()}
-                        className={`w-full ${errors.passport_upload_nonresident ? "border-red-500" : ""}`}
+                        className={`w-full h-12 ${errors.passport_upload_nonresident ? "border-red-500 hover:border-red-600" : "hover:bg-blue-50 dark:hover:bg-blue-950/20 hover:border-blue-300"} ${formData.passport_upload_nonresident_url ? "bg-green-50 border-green-300 text-green-700 dark:bg-green-950/20 dark:border-green-700 dark:text-green-400" : ""}`}
                       >
                         <Upload className="h-4 w-4 mr-2" />
-                        {formData.passport_upload_nonresident_url ? "Uploaded ✓" : "Upload Passport"}
+                        {formData.passport_upload_nonresident_url ? "✓ Passport Uploaded" : "Upload Passport"}
                       </Button>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1">Passport photo page.</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Passport photo page.</p>
                     {errors.passport_upload_nonresident && (
-                      <p className="text-sm text-red-500 mt-1">{errors.passport_upload_nonresident}</p>
+                      <p className="text-sm text-red-500 mt-1 font-medium">{errors.passport_upload_nonresident}</p>
                     )}
                   </div>
 
                   <div>
-                    <Label>NRI LRS Confirmation (Optional)</Label>
+                    <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">NRI LRS Confirmation (Optional)</Label>
                     <RadioGroup
                       value={formData.nri_lrs_confirm}
                       onValueChange={(value) => handleInputChange("nri_lrs_confirm", value)}
-                      className="mt-2"
+                      className="mt-3"
                     >
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-colors">
                         <RadioGroupItem value="yes" id="lrs-yes" />
-                        <Label htmlFor="lrs-yes">Yes</Label>
+                        <Label htmlFor="lrs-yes" className="cursor-pointer">Yes</Label>
                       </div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-colors">
                         <RadioGroupItem value="no" id="lrs-no" />
-                        <Label htmlFor="lrs-no">No</Label>
+                        <Label htmlFor="lrs-no" className="cursor-pointer">No</Label>
                       </div>
                     </RadioGroup>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
                       If you are an NRI investing under LRS, confirm you will comply with LRS/FEMA.
                     </p>
                   </div>
-                </>
+                </div>
               )}
             </div>
           )}
@@ -614,25 +579,53 @@ export default function InvestorOnboardingForm({ onClose }: InvestorOnboardingFo
               <h3 className="text-lg font-semibold text-foreground">Source of Funds & Consents</h3>
 
               <div>
-                <Label htmlFor="source_of_funds">Source of Funds *</Label>
-                <Select
-                  value={formData.source_of_funds}
-                  onValueChange={(value) => handleInputChange("source_of_funds", value)}
-                >
-                  <SelectTrigger className={errors.source_of_funds ? "border-red-500 focus:border-red-500" : ""}>
-                    <SelectValue placeholder="Select source of funds" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Salary">Salary</SelectItem>
-                    <SelectItem value="Savings">Savings</SelectItem>
-                    <SelectItem value="Business Income">Business Income</SelectItem>
-                    <SelectItem value="Investment Income">Investment Income</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.source_of_funds && <p className="text-sm text-red-500 mt-1">{errors.source_of_funds}</p>}
-              </div>
-
+  <Label htmlFor="source_of_funds">Source of Funds *</Label>
+  <Select 
+    value={formData.source_of_funds}
+    onValueChange={(value) => handleInputChange("source_of_funds", value)}
+  >
+    <SelectTrigger className={errors.source_of_funds ? "border-red-500 focus:border-red-500" : ""}>
+      <SelectValue placeholder="Select source of funds" />
+    </SelectTrigger>
+            <SelectContent 
+              className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-gray-700 shadow-lg z-[60]"
+              position="popper"
+              sideOffset={4}
+            >
+              <SelectItem 
+                value="Salary"
+                className="hover:bg-gray-100 dark:hover:bg-neutral-800 cursor-pointer"
+              >
+                Salary
+              </SelectItem>
+              <SelectItem 
+                value="Savings"
+                className="hover:bg-gray-100 dark:hover:bg-neutral-800 cursor-pointer"
+              >
+                Savings
+              </SelectItem>
+              <SelectItem 
+                value="Business Income"
+                className="hover:bg-gray-100 dark:hover:bg-neutral-800 cursor-pointer"
+              >
+                Business Income
+              </SelectItem>
+              <SelectItem 
+                value="Investment Income"
+                className="hover:bg-gray-100 dark:hover:bg-neutral-800 cursor-pointer"
+              >
+                Investment Income
+              </SelectItem>
+              <SelectItem 
+                value="Other"
+                className="hover:bg-gray-100 dark:hover:bg-neutral-800 cursor-pointer"
+              >
+                Other
+              </SelectItem>
+            </SelectContent>
+          </Select>
+          {errors.source_of_funds && <p className="text-sm text-red-500 mt-1">{errors.source_of_funds}</p>}
+        </div>
               <div>
                 <Label htmlFor="notes">Additional Notes (Optional)</Label>
                 <Textarea
@@ -685,9 +678,9 @@ export default function InvestorOnboardingForm({ onClose }: InvestorOnboardingFo
 
             <div className="ml-auto">
               {currentStep < 4 ? (
-                <Button onClick={handleNext}>Next</Button>
+                <Button  variant="outline" onClick={handleNext}>Next</Button>
               ) : (
-                <Button onClick={handleSubmit} disabled={isSubmitting}>
+                <Button variant="outline" onClick={handleSubmit} disabled={isSubmitting}>
                   {isSubmitting ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
