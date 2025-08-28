@@ -648,92 +648,186 @@ export default function DubaiInvestmentLanding() {
 
       {/* Final CTA */}
       <section className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-6">Secure Your Dubai South G 6 Position Today</h2>
-            <p className="text-xl text-muted-foreground mb-8">
-              Only 20 investment positions available in this exclusive Dubai South G 6 development opportunity.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Button
-                variant="outline"
-                size="lg"
-                className="bg-accent hover:bg-accent/90 text-lg px-8"
-                onClick={handleApplyNow}
-              >
-                Apply for Investment
-              </Button>
-              <Button variant="outline" size="lg" className="text-lg px-8 bg-transparent">
-                Schedule Consultation
-              </Button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-muted-foreground">
-              <div className="flex items-center justify-center space-x-2">
-                <Phone className="h-4 w-4" />
-                <span>+971 800 MIRFA(64732)</span>
-              </div>
-              <div className="flex items-center justify-center space-x-2">
-                <Mail className="h-4 w-4" />
-                <span>invest@mirfa.com</span>
-              </div>
-              <div className="flex items-center justify-center space-x-2">
-                <MapPin className="h-4 w-4" />
-                <span>DIFC, Dubai, UAE</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+  <div className="container mx-auto px-4">
+    <div className="max-w-4xl mx-auto text-center">
+      <h2 className="text-3xl lg:text-4xl font-bold mb-6">
+        Secure Your Dubai South G 6 Position Today
+      </h2>
 
-      <footer className="bg-gray-900 text-white py-16">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-            <div>
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="w-8 h-8 bg-primary rounded-sm flex items-center justify-center">
-                  <span className="text-black font-bold text-sm">M</span>
-                </div>
-                <span className="text-xl font-light">MIRFA</span>
-              </div>
-              <p className="text-gray-400 font-light leading-relaxed">
-                Dubai South G 6 development - Exclusive real estate investment opportunity in Dubai's premier business
-                district.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-medium mb-6 tracking-wider text-sm">INVESTMENT</h4>
-              <ul className="space-y-3 text-gray-400 font-light text-sm">
-                <li>Minimum Investment</li>
-                <li>Target Returns</li>
-                <li>Investment Timeline</li>
-                <li>Risk Factors</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-medium mb-6 tracking-wider text-sm">LEGAL</h4>
-              <ul className="space-y-3 text-gray-400 font-light text-sm">
-                <li>DIFC Regulation</li>
-                <li>Terms & Conditions</li>
-                <li>Privacy Policy</li>
-                <li>Compliance</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-medium mb-6 tracking-wider text-sm">CONTACT</h4>
-              <ul className="space-y-3 text-gray-400 font-light text-sm">
-                <li>+971 800 MIRFA(64732)</li>
-                <li>invest@mirfa.com</li>
-                <li>DIFC, Dubai, UAE</li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 mt-12 pt-8 text-center">
-            <p className="text-gray-500 font-light text-sm">
-              © 2025 MIRFA IBC. All rights reserved. Regulated by DIFC.
-            </p>
-          </div>
+      <p className="text-xl text-muted-foreground mb-8">
+        Only 20 investment positions available in this exclusive Dubai South G 6 development opportunity.
+      </p>
+
+      <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+        {/* Primary CTA */}
+        <Button
+          variant="outline"
+          size="lg"
+          className="bg-accent hover:bg-accent/90 text-lg px-8"
+          onClick={handleApplyNow}
+          aria-label="Apply for investment in Dubai South G 6"
+          data-analytics="cta-apply-investment"
+        >
+          Apply for Investment
+        </Button>
+
+        {/* Call CTA */}
+        <Button
+          asChild
+          variant="outline"
+          size="lg"
+          className="text-lg px-8 bg-transparent"
+        >
+          <a
+            href="tel:+97180064732"
+            aria-label="Call +971 800 MIRFA to schedule a consultation"
+            data-analytics="cta-schedule-call"
+          >
+            Schedule Consultation
+          </a>
+        </Button>
+
+        {/* WhatsApp CTA (optional but recommended) */}
+        <Button
+          asChild
+          variant="outline"
+          size="lg"
+          className="text-lg px-8 bg-transparent"
+        >
+          <a
+            href="https://wa.me/97180064732"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Chat on WhatsApp at +971 800 MIRFA"
+            data-analytics="cta-whatsapp"
+          >
+            Chat on WhatsApp
+          </a>
+        </Button>
+      </div>
+
+      {/* Contact strip */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-muted-foreground">
+        <div className="flex items-center justify-center space-x-2">
+          <Phone className="h-4 w-4" aria-hidden="true" />
+          <a
+            href="tel:+97180064732"
+            className="hover:underline"
+            aria-label="Call +971 800 MIRFA"
+            data-analytics="contact-phone"
+          >
+            +971 800 MIRFA (64732)
+          </a>
         </div>
-      </footer>
+
+        <div className="flex items-center justify-center space-x-2">
+          <Mail className="h-4 w-4" aria-hidden="true" />
+          <a
+            href="mailto:invest@mirfa.com"
+            className="hover:underline"
+            aria-label="Email invest@mirfa.com"
+            data-analytics="contact-email"
+          >
+            invest@mirfa.com
+          </a>
+        </div>
+
+        <div className="flex items-center justify-center space-x-2">
+          <MapPin className="h-4 w-4" aria-hidden="true" />
+          <a
+            href="https://www.google.com/maps/search/?api=1&query=DIFC,+Dubai,+UAE"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline"
+            aria-label="Open location in Google Maps: DIFC, Dubai, UAE"
+            data-analytics="contact-map"
+          >
+            DIFC, Dubai, UAE
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer className="bg-gray-900 text-white py-16">
+  <div className="container mx-auto px-6">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+      
+      {/* Brand */}
+      <div>
+        <div className="flex items-center space-x-3 mb-6">
+          <div className="w-8 h-8 bg-primary rounded-sm flex items-center justify-center">
+            <span className="text-black font-bold text-sm">M</span>
+          </div>
+          <span className="text-xl font-light">MIRFA</span>
+        </div>
+        <p className="text-gray-400 font-light leading-relaxed">
+          Dubai South G 6 development – Exclusive real estate investment
+          opportunity in Dubai&apos;s premier business district.
+        </p>
+      </div>
+
+      {/* Investment */}
+      <div>
+        <h4 className="font-medium mb-6 tracking-wider text-sm">INVESTMENT</h4>
+        <ul className="space-y-3 text-gray-400 font-light text-sm">
+          <li><a href="#investment" className="hover:text-white">Minimum Investment</a></li>
+          <li><a href="#returns" className="hover:text-white">Target Returns</a></li>
+          <li><a href="#timeline" className="hover:text-white">Investment Timeline</a></li>
+          <li><a href="#risk" className="hover:text-white">Risk Factors</a></li>
+        </ul>
+      </div>
+
+      {/* Legal */}
+      <div>
+        <h4 className="font-medium mb-6 tracking-wider text-sm">LEGAL</h4>
+        <ul className="space-y-3 text-gray-400 font-light text-sm">
+          <li><a href="/regulation" className="hover:text-white">DIFC Regulation</a></li>
+          <li><a href="/terms" className="hover:text-white">Terms &amp; Conditions</a></li>
+          <li><a href="/privacy" className="hover:text-white">Privacy Policy</a></li>
+          <li><a href="/compliance" className="hover:text-white">Compliance</a></li>
+        </ul>
+      </div>
+
+      {/* Contact */}
+      <div>
+        <h4 className="font-medium mb-6 tracking-wider text-sm">CONTACT</h4>
+        <ul className="space-y-3 text-gray-400 font-light text-sm">
+          <li>
+            <a href="tel:+97180064732" className="hover:text-white" aria-label="Call +971 800 MIRFA">
+              +971 800 MIRFA (64732)
+            </a>
+          </li>
+          <li>
+            <a href="mailto:invest@mirfa.com" className="hover:text-white" aria-label="Email invest@mirfa.com">
+              invest@mirfa.com
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://www.google.com/maps/search/?api=1&query=DIFC,+Dubai,+UAE"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white"
+              aria-label="Open DIFC Dubai UAE on Google Maps"
+            >
+              DIFC, Dubai, UAE
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    {/* Bottom bar */}
+    <div className="border-t border-gray-800 mt-12 pt-8 text-center">
+      <p className="text-gray-500 font-light text-sm">
+        © 2025 MIRFA IBC. All rights reserved. Regulated by DIFC.
+      </p>
+    </div>
+  </div>
+</footer>
+
 
       {/* Investor Onboarding Form Modal */}
       {isModalOpen && <InvestorOnboardingForm onClose={() => setIsModalOpen(false)} />}
