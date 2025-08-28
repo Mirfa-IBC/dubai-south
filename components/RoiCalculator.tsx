@@ -112,7 +112,7 @@ function xirr(cashflows: { date: Date; amount: number }[], guess = 0.15): number
 }
 
 const AED = (n: number) =>
-  n.toLocaleString("en-AE", { style: "currency", currency: "AED", maximumFractionDigits: 2 })
+  n.toLocaleString("en-AE", { style: "currency", currency: "AED", maximumFractionDigits: 0 })
 
 function toCSV(rows: { date: string; amount: number; cumulative: number; note: string }[]) {
   const header = "Date,Amount (AED),Cumulative (AED),Note"
@@ -411,22 +411,13 @@ export default function RoiCalculator() {
 /** Numbers visually “flow out” using absolute positioning + overflow-visible */
 function Kpi({ label, value, accent }: { label: string; value: string; accent?: string }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border p-3 sm:p-4 bg-background">
+    // ⬇️ change overflow-hidden → overflow-visible and tighten spacing
+    <div className="relative overflow-visible rounded-2xl border p-3 sm:p-4 bg-background">
       <div className="text-xs uppercase tracking-wide opacity-70">{label}</div>
-      <div className="text-2xl font-semibold mt-1">{value}</div>
-
-      {/* background number, now clipped to box */}
-      {/* <div
-        className={[
-          "pointer-events-none select-none",
-          "absolute -top-2 right-2",
-          "text-4xl sm:text-5xl font-extrabold opacity-10 leading-none",
-          accent ?? "text-foreground",
-        ].join(" ")}
-        aria-hidden
-      >
+      {/* ⬇️ smaller on mobile + tighter line height to avoid clipping */}
+      <div className="text-xl sm:text-2xl font-semibold mt-1 leading-tight break-words">
         {value}
-      </div> */}
+      </div>
     </div>
   )
 }
