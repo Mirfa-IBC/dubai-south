@@ -286,7 +286,7 @@ export default function DubaiInvestmentLanding() {
                 </div>
                 <h3 className="text-xl font-medium mb-4 text-gray-900">DIFC Account Protection</h3>
                 <p className="text-gray-600 font-light leading-relaxed">
-                  Your funds are held in secure escrow until all conditions are met
+                  Your funds are held in DIFC regulated account until all conditions are met
                 </p>
               </div>
               <div className="text-center">
