@@ -284,7 +284,7 @@ export default function DubaiInvestmentLanding() {
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
                   <CheckCircle className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-medium mb-4 text-gray-900">Escrow Protection</h3>
+                <h3 className="text-xl font-medium mb-4 text-gray-900">DIFC Account Protection</h3>
                 <p className="text-gray-600 font-light leading-relaxed">
                   Your funds are held in secure escrow until all conditions are met
                 </p>
@@ -560,8 +560,8 @@ export default function DubaiInvestmentLanding() {
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <CheckCircle className="h-12 w-12 text-accent mb-4" />
-                <CardTitle>Escrow Protection</CardTitle>
-                <CardDescription>Your funds are held in secure escrow until all conditions are met</CardDescription>
+                <CardTitle>DIFC Regulated Protection</CardTitle>
+                <CardDescription>Your funds are held in secure difc regulated until all conditions are met</CardDescription>
               </CardHeader>
             </Card>
             <Card className="hover:shadow-lg transition-shadow">
@@ -577,7 +577,7 @@ export default function DubaiInvestmentLanding() {
               <CardHeader>
                 <TrendingUp className="h-12 w-12 text-accent mb-4" />
                 <CardTitle>Proven Track Record</CardTitle>
-                <CardDescription>Our development team has delivered 15+ successful projects in Dubai</CardDescription>
+                <CardDescription>Our development team has delivered 5+ successful projects in Dubai</CardDescription>
               </CardHeader>
             </Card>
             <Card className="hover:shadow-lg transition-shadow">
@@ -678,7 +678,7 @@ export default function DubaiInvestmentLanding() {
             href="https://wa.me/97180064732"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Chat on WhatsApp at +971 800 MIRFA"
+            aria-label="Chat on WhatsApp at  800 MIRFA"
             data-analytics="cta-whatsapp"
           >
             Chat on WhatsApp
@@ -693,10 +693,10 @@ export default function DubaiInvestmentLanding() {
           <a
             href="tel:+97180064732"
             className="hover:underline"
-            aria-label="Call +971 800 MIRFA"
+            aria-label="Call 800 MIRFA"
             data-analytics="contact-phone"
           >
-            +971 800 MIRFA (64732)
+            800 MIRFA (64732)
           </a>
         </div>
 
@@ -777,8 +777,8 @@ export default function DubaiInvestmentLanding() {
         <h4 className="font-medium mb-6 tracking-wider text-sm">CONTACT</h4>
         <ul className="space-y-3 text-gray-400 font-light text-sm">
           <li>
-            <a href="tel:+97180064732" className="hover:text-white" aria-label="Call +971 800 MIRFA">
-              +971 800 MIRFA (64732)
+            <a href="tel:+97180064732" className="hover:text-white" aria-label="Call  800 MIRFA">
+              800 MIRFA (64732)
             </a>
           </li>
           <li>
