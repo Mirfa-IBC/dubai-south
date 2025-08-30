@@ -352,6 +352,8 @@ export default function InvestorOnboardingForm({ onClose = () => {} }: { onClose
   }, [setValue])
 
   const residency = watch("residency_status")
+  const fromSession = sessionStorage.getItem("mirfa_invite_code") || ""
+  if (fromSession) setValue("referral_code", fromSession)
 
   const goNext = async () => {
     const fieldsByStep: Record<number, (keyof FormValues)[]> = {

@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -23,13 +24,92 @@ import {
   ArrowRight,
 } from "lucide-react"
 
+/**
+ * Invite gate states
+ */
+ type GateState = "loading" | "granted" | "denied"
+
+/** Simple helper for UAE/E.164-ish numbers (lenient) */
+const isValidPhone = (v: string) => /^(\+?971|0)?\d{8,12}$/.test(v.replace(/\s|-/g, ""))
+
+
 export default function DubaiInvestmentLanding() {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [gate, setGate] = useState<GateState>("loading")
+  const [denyReason, setDenyReason] = useState<string>("")
+  const qp = useSearchParams()
+  
 
-  const handleApplyNow = () => {
-    setIsModalOpen(true)
+  // 1) Validate invite code on mount (or when query changes)
+  useEffect(() => {
+    const code = qp.get("invite_code")?.trim()
+
+    // Optional: trust a previously validated code this session
+    const cached = sessionStorage.getItem("mirfa_invite_ok")
+    if (cached === "1") {
+      setGate("granted")
+      return
+    }
+
+    if (!code) {
+      setGate("denied")
+      setDenyReason("Missing invite code in the link.")
+      return
+    }
+
+    let aborted = false
+    ;(async () => {
+      try {
+        setGate("loading")
+        // Call your backend to validate the code
+        // The API should return { valid: boolean, message?: string }
+        const res = await fetch(`/api/invite/validate?code=${encodeURIComponent(code)}`, {
+          method: "GET",
+          headers: { "Accept": "application/json" },
+          cache: "no-store",
+        })
+
+        if (!res.ok) throw new Error(`Validate request failed (${res.status})`)
+        const json = (await res.json()) as { valid: boolean; message?: string }
+        if (aborted) return
+
+        if (json.valid) {
+          sessionStorage.setItem("mirfa_invite_ok", "1")
+          sessionStorage.setItem("mirfa_invite_code", code) // so the form can pick it up
+          setGate("granted")
+        } else {
+          setGate("denied")
+          setDenyReason(json.message || "Invalid or expired invite code.")
+        }
+      } catch (err: any) {
+        if (aborted) return
+        setGate("denied")
+        setDenyReason(err?.message || "Unable to validate invite. Please try again.")
+      }
+    })()
+
+    return () => {
+      aborted = true
+    }
+  }, [qp])
+
+  const handleApplyNow = () => setIsModalOpen(true)
+
+  // =====================
+  // Invite-only screen
+  // =====================
+  if (gate !== "granted") {
+    return (
+      <InviteOnlyScreen
+        loading={gate === "loading"}
+        reason={denyReason}
+      />
+    )
   }
 
+  // =====================
+  // Original Landing Page
+  // =====================
   const portfolioProjects = [
     {
       id: 1,
@@ -182,21 +262,12 @@ export default function DubaiInvestmentLanding() {
             <img src="images/logo.png" alt="Mirfa Logo" className="h-8" />
           </div>
           <nav className="hidden md:flex items-center space-x-8 text-white/90 text-sm font-light">
-            <a href="#about" className="hover:text-white transition-colors">
-              ABOUT
-            </a>
-            <a href="#location" className="hover:text-white transition-colors">
-              LOCATION
-            </a>
-            <a href="#portfolio" className="hover:text-white transition-colors">
-              PORTFOLIO
-            </a>
-            <a href="#contact" className="hover:text-white transition-colors">
-              CONTACT
-            </a>
+            <a href="#about" className="hover:text-white transition-colors">ABOUT</a>
+            <a href="#location" className="hover:text-white transition-colors">LOCATION</a>
+            <a href="#portfolio" className="hover:text-white transition-colors">PORTFOLIO</a>
+            <a href="#contact" className="hover:text-white transition-colors">CONTACT</a>
           </nav>
           <div className="flex items-center space-x-4">
-            {/* <ThemeToggle /> */}
             <Button
               variant="outline"
               className="border-white/30 text-white hover:bg-white hover:text-black transition-all bg-transparent"
@@ -208,6 +279,7 @@ export default function DubaiInvestmentLanding() {
         </div>
       </header>
 
+      {/* HERO */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <img
@@ -260,6 +332,7 @@ export default function DubaiInvestmentLanding() {
         </div>
       </section>
 
+      {/* ABOUT */}
       <section className="py-24 bg-white" id="about">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
@@ -303,6 +376,7 @@ export default function DubaiInvestmentLanding() {
         </div>
       </section>
 
+      {/* LOCATION */}
       <section id="location" className="py-24 bg-gray-50">
         <div className="container mx-auto px-6">
           <div className="max-w-7xl mx-auto">
@@ -378,6 +452,7 @@ export default function DubaiInvestmentLanding() {
         </div>
       </section>
 
+      {/* PORTFOLIO */}
       <section id="portfolio" className="py-24 bg-white">
         <div className="container mx-auto px-6">
           <div className="text-center mb-20">
@@ -413,7 +488,11 @@ export default function DubaiInvestmentLanding() {
                   <div className="grid grid-cols-3 gap-8">
                     <div>
                       <div className="text-2xl font-light text-primary mb-1">{project.irr}</div>
-                      <div className="text-xs text-gray-500 font-light tracking-wider">TARGET IRR</div>
+                      {project.status === "Active Investment" ? (
+                        <div className="text-xs text-gray-500 font-light tracking-wider">TARGET IRR</div>
+                      ) : (
+                        <div className="text-xs text-gray-500 font-light tracking-wider">ACHIEVED IRR</div>
+                      )}
                     </div>
                     <div>
                       <div className="text-lg font-light text-gray-900 mb-1">{project.investment}</div>
@@ -436,9 +515,7 @@ export default function DubaiInvestmentLanding() {
                       </Button>
                     ) : (
                       <div className="flex items-center space-x-3">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium text-white ${project.statusColor}`}
-                        >
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium text-white ${project.statusColor}`}>
                           {project.status}
                         </span>
                         <span className="text-sm text-gray-500 font-light">No longer accepting investments</span>
@@ -452,7 +529,7 @@ export default function DubaiInvestmentLanding() {
         </div>
       </section>
 
-      {/* Investor Journey Section */}
+      {/* JOURNEY */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -463,38 +540,30 @@ export default function DubaiInvestmentLanding() {
           </div>
           <div className="max-w-6xl mx-auto">
             <div className="relative">
-              {/* Timeline Line */}
               <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-accent to-primary transform -translate-y-1/2 hidden lg:block" />
 
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-4">
                 {investorJourney.map((item, index) => {
-                  const IconComponent = item.icon
+                  const IconComponent = item.icon as any
                   return (
                     <div key={item.step} className="relative">
-                      {/* Mobile Timeline Line */}
                       {index < investorJourney.length - 1 && (
                         <div className="absolute left-8 top-20 w-0.5 h-16 bg-gradient-to-b from-primary to-accent lg:hidden" />
                       )}
 
                       <Card className="relative bg-card/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-2 border-transparent hover:border-primary/20">
                         <CardContent className="pt-6 text-center">
-                          {/* Step Number */}
                           <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center text-white font-bold text-sm">
                             {item.step}
                           </div>
 
-                          {/* Icon */}
-                          <div
-                            className={`w-16 h-16 ${item.bgColor} rounded-full flex items-center justify-center mx-auto mb-4`}
-                          >
+                          <div className={`w-16 h-16 ${item.bgColor} rounded-full flex items-center justify-center mx-auto mb-4`}>
                             <IconComponent className={`h-8 w-8 ${item.color}`} />
                           </div>
 
-                          {/* Content */}
                           <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
                           <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
 
-                          {/* Arrow for larger screens */}
                           {index < investorJourney.length - 1 && (
                             <div className="absolute top-1/2 -right-4 transform -translate-y-1/2 hidden lg:block">
                               <ArrowRight className="h-6 w-6 text-primary" />
@@ -508,7 +577,6 @@ export default function DubaiInvestmentLanding() {
               </div>
             </div>
 
-            {/* CTA Button */}
             <div className="text-center mt-12">
               <Button variant="outline" size="lg" className="bg-accent hover:bg-accent/90 text-lg px-8" onClick={handleApplyNow}>
                 Start Your Investment Journey
@@ -519,6 +587,7 @@ export default function DubaiInvestmentLanding() {
         </div>
       </section>
 
+      {/* ROI */}
       <section id="roi" className="relative py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl">
@@ -533,7 +602,7 @@ export default function DubaiInvestmentLanding() {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* FEATURES */}
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -595,219 +664,317 @@ export default function DubaiInvestmentLanding() {
         </div>
       </section>
 
-      {/* FAQ Section */}
+      {/* FAQ */}
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl lg:text-4xl font-bold mb-4">Frequently Asked Questions</h2>
-              <p className="text-xl text-muted-foreground">
-                Get answers to common questions about the investment opportunity
-              </p>
+              <p className="text-xl text-muted-foreground">Get answers to common questions about the investment opportunity</p>
             </div>
             <Accordion type="single" collapsible className="space-y-4">
-  {[
-    { v: "item-1", q: "What is the minimum investment amount?", a: "The minimum investment amount is AED 50,000..." },
-    { v: "item-2", q: "How is the 20.8% IRR target calculated?", a: "The target IRR is based on conservative market projections..." },
-    { v: "item-3", q: "What protections are in place for investors?", a: "We use a DIFC SPV structure, escrow accounts..." },
-    { v: "item-4", q: "What is the expected investment timeline?", a: "24–36 months from initial investment to exit..." },
-    { v: "item-5", q: "Can international investors participate?", a: "Yes. Our DIFC structure accommodates global participation..." },
-  ].map(({ v, q, a }) => (
-    <AccordionItem
-      key={v}
-      value={v}
-      className="rounded-2xl border bg-card shadow-sm transition-all hover:shadow-md overflow-hidden"
-    >
-      <AccordionTrigger className="px-6 py-4 text-left aria-expanded:font-medium data-[state=open]:text-foreground">
-        <span className="flex-1">{q}</span>
-        <span className="transition-transform duration-200 data-[state=open]:rotate-180" />
-      </AccordionTrigger>
-
-      {/* animated content; keep overflow-hidden for clean rounded corners */}
-      <AccordionContent className="px-6 pb-5 text-muted-foreground leading-relaxed overflow-hidden">
-        {a}
-      </AccordionContent>
-    </AccordionItem>
-  ))}
-</Accordion>
+              {[
+                { v: "item-1", q: "What is the minimum investment amount?", a: "The minimum investment amount is AED 50,000..." },
+                { v: "item-2", q: "How is the 20.8% IRR target calculated?", a: "The target IRR is based on conservative market projections..." },
+                { v: "item-3", q: "What protections are in place for investors?", a: "We use a DIFC SPV structure, escrow accounts..." },
+                { v: "item-4", q: "What is the expected investment timeline?", a: "24–36 months from initial investment to exit..." },
+                { v: "item-5", q: "Can international investors participate?", a: "Yes. Our DIFC structure accommodates global participation..." },
+              ].map(({ v, q, a }) => (
+                <AccordionItem key={v} value={v} className="rounded-2xl border bg-card shadow-sm transition-all hover:shadow-md overflow-hidden">
+                  <AccordionTrigger className="px-6 py-4 text-left aria-expanded:font-medium data-[state=open]:text-foreground">
+                    <span className="flex-1">{q}</span>
+                    <span className="transition-transform duration-200 data-[state=open]:rotate-180" />
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-5 text-muted-foreground leading-relaxed overflow-hidden">
+                    {a}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </div>
         </div>
       </section>
 
-      {/* Final CTA */}
+      {/* FINAL CTA */}
       <section className="py-20 bg-muted/30">
-  <div className="container mx-auto px-4">
-    <div className="max-w-4xl mx-auto text-center">
-      <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-        Secure Your Dubai South G 6 Position Today
-      </h2>
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-6">Secure Your Dubai South G 6 Position Today</h2>
+            <p className="text-xl text-muted-foreground mb-8">Only 20 investment positions available in this exclusive Dubai South G 6 development opportunity.</p>
 
-      <p className="text-xl text-muted-foreground mb-8">
-        Only 20 investment positions available in this exclusive Dubai South G 6 development opportunity.
-      </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+              <Button
+                variant="outline"
+                size="lg"
+                className="bg-accent hover:bg-accent/90 text-lg px-8"
+                onClick={handleApplyNow}
+                aria-label="Apply for investment in Dubai South G 6"
+                data-analytics="cta-apply-investment"
+              >
+                Apply for Investment
+              </Button>
 
-      <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-        {/* Primary CTA */}
-        <Button
-          variant="outline"
-          size="lg"
-          className="bg-accent hover:bg-accent/90 text-lg px-8"
-          onClick={handleApplyNow}
-          aria-label="Apply for investment in Dubai South G 6"
-          data-analytics="cta-apply-investment"
-        >
-          Apply for Investment
-        </Button>
+              <Button asChild variant="outline" size="lg" className="text-lg px-8 bg-transparent">
+                <a
+                  href="https://wa.me/97180064732"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Chat on WhatsApp at +971 800 MIRFA"
+                  data-analytics="cta-whatsapp"
+                >
+                  Chat on WhatsApp
+                </a>
+              </Button>
+            </div>
 
-        {/* Call CTA */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-muted-foreground">
+              <div className="flex items-center justify-center space-x-2">
+                <Phone className="h-4 w-4" aria-hidden="true" />
+                <a href="tel:+97180064732" className="hover:underline" aria-label="Call +971 800 MIRFA" data-analytics="contact-phone">
+                  +971 800 MIRFA (64732)
+                </a>
+              </div>
 
+              <div className="flex items-center justify-center space-x-2">
+                <Mail className="h-4 w-4" aria-hidden="true" />
+                <a href="mailto:invest@mirfa.com" className="hover:underline" aria-label="Email invest@mirfa.com" data-analytics="contact-email">
+                  invest@mirfa.com
+                </a>
+              </div>
 
-        {/* WhatsApp CTA (optional but recommended) */}
-        <Button
-          asChild
-          variant="outline"
-          size="lg"
-          className="text-lg px-8 bg-transparent"
-        >
-          <a
-            href="https://wa.me/97180064732"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Chat on WhatsApp at +971 800 MIRFA"
-            data-analytics="cta-whatsapp"
-          >
-            Chat on WhatsApp
-          </a>
-        </Button>
-      </div>
-
-      {/* Contact strip */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-muted-foreground">
-        <div className="flex items-center justify-center space-x-2">
-          <Phone className="h-4 w-4" aria-hidden="true" />
-          <a
-            href="tel:+97180064732"
-            className="hover:underline"
-            aria-label="Call +971 800 MIRFA"
-            data-analytics="contact-phone"
-          >
-            +971 800 MIRFA (64732)
-          </a>
-        </div>
-
-        <div className="flex items-center justify-center space-x-2">
-          <Mail className="h-4 w-4" aria-hidden="true" />
-          <a
-            href="mailto:invest@mirfa.com"
-            className="hover:underline"
-            aria-label="Email invest@mirfa.com"
-            data-analytics="contact-email"
-          >
-            invest@mirfa.com
-          </a>
-        </div>
-
-        <div className="flex items-center justify-center space-x-2">
-          <MapPin className="h-4 w-4" aria-hidden="true" />
-          <a
-            href="https://www.google.com/maps/search/?api=1&query=DIFC,+Dubai,+UAE"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:underline"
-            aria-label="Open location in Google Maps: DIFC, Dubai, UAE"
-            data-analytics="contact-map"
-          >
-            DIFC, Dubai, UAE
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<footer className="bg-gray-900 text-white py-16">
-  <div className="container mx-auto px-6">
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-      
-      {/* Brand */}
-      <div>
-        <div className="flex items-center space-x-3 mb-6">
-          <div className="w-8 h-8 bg-primary rounded-sm flex items-center justify-center">
-            <span className="text-black font-bold text-sm">M</span>
-          </div>
-          <div className="flex items-center">
-            <img src="images/logo.png" alt="Mirfa Logo" className="h-8" />
+              <div className="flex items-center justify-center space-x-2">
+                <MapPin className="h-4 w-4" aria-hidden="true" />
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=DIFC,+Dubai,+UAE"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                  aria-label="Open location in Google Maps: DIFC, Dubai, UAE"
+                  data-analytics="contact-map"
+                >
+                  DIFC, Dubai, UAE
+                </a>
+              </div>
+            </div>
           </div>
         </div>
-        <p className="text-gray-400 font-light leading-relaxed">
-          G6 Dubai South development – Exclusive real estate investment
-          opportunity in Dubai&apos;s premier business district.
-        </p>
-      </div>
+      </section>
 
-      {/* Investment */}
-      <div>
-        <h4 className="font-medium mb-6 tracking-wider text-sm">INVESTMENT</h4>
-        <ul className="space-y-3 text-gray-400 font-light text-sm">
-          <li><a href="#investment" className="hover:text-white">Minimum Investment</a></li>
-          <li><a href="#returns" className="hover:text-white">Target Returns</a></li>
-          <li><a href="#timeline" className="hover:text-white">Investment Timeline</a></li>
-          <li><a href="#risk" className="hover:text-white">Risk Factors</a></li>
-        </ul>
-      </div>
+      <footer className="bg-gray-900 text-white py-16">
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+            <div>
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-8 h-8 bg-primary rounded-sm flex items-center justify-center">
+                  <span className="text-black font-bold text-sm">M</span>
+                </div>
+                <div className="flex items-center">
+                  <img src="images/logo.png" alt="Mirfa Logo" className="h-8" />
+                </div>
+              </div>
+              <p className="text-gray-400 font-light leading-relaxed">
+                G6 Dubai South development – Exclusive real estate investment opportunity in Dubai&apos;s premier business district.
+              </p>
+            </div>
 
-      {/* Legal */}
-      <div>
-        <h4 className="font-medium mb-6 tracking-wider text-sm">LEGAL</h4>
-        <ul className="space-y-3 text-gray-400 font-light text-sm">
-          <li><a href="/regulation" className="hover:text-white">DIFC Regulation</a></li>
-          <li><a href="/terms" className="hover:text-white">Terms &amp; Conditions</a></li>
-          <li><a href="/privacy" className="hover:text-white">Privacy Policy</a></li>
-          <li><a href="/compliance" className="hover:text-white">Compliance</a></li>
-        </ul>
-      </div>
+            <div>
+              <h4 className="font-medium mb-6 tracking-wider text-sm">INVESTMENT</h4>
+              <ul className="space-y-3 text-gray-400 font-light text-sm">
+                <li><a href="#investment" className="hover:text-white">Minimum Investment</a></li>
+                <li><a href="#returns" className="hover:text-white">Target Returns</a></li>
+                <li><a href="#timeline" className="hover:text-white">Investment Timeline</a></li>
+                <li><a href="#risk" className="hover:text-white">Risk Factors</a></li>
+              </ul>
+            </div>
 
-      {/* Contact */}
-      <div>
-        <h4 className="font-medium mb-6 tracking-wider text-sm">CONTACT</h4>
-        <ul className="space-y-3 text-gray-400 font-light text-sm">
-          <li>
-            <a href="tel:+97180064732" className="hover:text-white" aria-label="Call +971 800 MIRFA">
-              +971 800 MIRFA (64732)
-            </a>
-          </li>
-          <li>
-            <a href="mailto:invest@mirfa.com" className="hover:text-white" aria-label="Email invest@mirfa.com">
-              invest@mirfa.com
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://www.google.com/maps/search/?api=1&query=DIFC,+Dubai,+UAE"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white"
-              aria-label="Open DIFC Dubai UAE on Google Maps"
-            >
-              DIFC, Dubai, UAE
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
+            <div>
+              <h4 className="font-medium mb-6 tracking-wider text-sm">LEGAL</h4>
+              <ul className="space-y-3 text-gray-400 font-light text-sm">
+                <li><a href="/regulation" className="hover:text-white">DIFC Regulation</a></li>
+                <li><a href="/terms" className="hover:text-white">Terms &amp; Conditions</a></li>
+                <li><a href="/privacy" className="hover:text-white">Privacy Policy</a></li>
+                <li><a href="/compliance" className="hover:text-white">Compliance</a></li>
+              </ul>
+            </div>
 
-    {/* Bottom bar */}
-    <div className="border-t border-gray-800 mt-12 pt-8 text-center">
-      <p className="text-gray-500 font-light text-sm">
-        © 2025 MIRFA IBC. All rights reserved. Regulated by DIFC.
-      </p>
-    </div>
-  </div>
-</footer>
+            <div>
+              <h4 className="font-medium mb-6 tracking-wider text-sm">CONTACT</h4>
+              <ul className="space-y-3 text-gray-400 font-light text-sm">
+                <li>
+                  <a href="tel:+97180064732" className="hover:text-white" aria-label="Call +971 800 MIRFA">+971 800 MIRFA (64732)</a>
+                </li>
+                <li>
+                  <a href="mailto:invest@mirfa.com" className="hover:text-white" aria-label="Email invest@mirfa.com">invest@mirfa.com</a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.google.com/maps/search/?api=1&query=DIFC,+Dubai,+UAE"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-white"
+                    aria-label="Open DIFC Dubai UAE on Google Maps"
+                  >
+                    DIFC, Dubai, UAE
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
 
+          <div className="border-t border-gray-800 mt-12 pt-8 text-center">
+            <p className="text-gray-500 font-light text-sm">© 2025 MIRFA IBC. All rights reserved. Regulated by DIFC.</p>
+          </div>
+        </div>
+      </footer>
 
       {/* Investor Onboarding Form Modal */}
       {isModalOpen && <InvestorOnboardingForm onClose={() => setIsModalOpen(false)} />}
     </div>
   )
+}
+
+/** Invite-only screen component */
+function InviteOnlyScreen({ loading, reason }: { loading: boolean; reason?: string }) {
+  const [name, setName] = useState("")
+  const [phone, setPhone] = useState("")
+  const [submitting, setSubmitting] = useState(false)
+  const [done, setDone] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const canSubmit = name.trim().length >= 2 && isValidPhone(phone)
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!canSubmit) return
+    setSubmitting(true)
+    setError(null)
+    try {
+      const res = await fetch("/api/invite/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim(), phone: phone.trim() }),
+      })
+      if (!res.ok) throw new Error(`Request failed (${res.status})`)
+      setDone(true)
+    } catch (err: any) {
+      setError(err?.message || "Something went wrong. Please try again.")
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black to-gray-900 text-white px-6">
+      <div className="max-w-xl w-full text-center">
+        <img src="/images/logo.png" alt="Mirfa" className="h-8 mx-auto mb-8 opacity-90" />
+
+        <h1 className="text-3xl md:text-4xl font-light mb-3">Invitation Required</h1>
+        <p className="text-white/70 mb-8">
+          This opportunity is currently invite-only. {loading ? "Validating your access…" : "Ask someone to refer you or request an invite below."}
+        </p>
+
+        {!loading && reason && (
+          <p className="text-sm text-red-300 mb-6" role="alert">{reason}</p>
+        )}
+
+        <Card className="bg-white/5 border-white/10 backdrop-blur-md">
+          <CardHeader>
+            <CardTitle className="text-left text-white/90 text-lg">Request an Invite</CardTitle>
+            <CardDescription className="text-left text-white/60">Share your details and we will get back to you.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {done ? (
+              <div className="text-left">
+                <p className="text-green-300">Thanks, {name.split(" ")[0]}! Your invite request has been received.</p>
+                <p className="text-white/70 mt-2">We will contact you on WhatsApp/phone shortly.</p>
+              </div>
+            ) : (
+              <form onSubmit={onSubmit} className="space-y-4 text-left">
+                <div>
+                  <label className="block text-sm text-white/80 mb-1">Full Name</label>
+                  <input
+                    className="w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 outline-none focus:border-primary/60"
+                    placeholder="Your name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-white/80 mb-1">Phone (WhatsApp)</label>
+                  <input
+                    className="w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 outline-none focus:border-primary/60"
+                    placeholder="e.g. +9715XXXXXXXX"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    required
+                  />
+                  {!isValidPhone(phone) && phone && (
+                    <p className="text-xs text-red-300 mt-1">Enter a valid UAE / E.164 phone number.</p>
+                  )}
+                </div>
+                {error && <p className="text-sm text-red-300">{error}</p>}
+                <Button type="submit" disabled={!canSubmit || submitting} className="w-full">
+                  {submitting ? "Submitting…" : "Request Invite"}
+                </Button>
+              </form>
+            )}
+          </CardContent>
+        </Card>
+
+        <p className="text-white/50 text-xs mt-6">Already have a code? Ask your referrer for a fresh link with <code>invite_code=YOURCODE</code>.</p>
+      </div>
+    </div>
+  )
+}
+
+// =============================
+// API ROUTES (Next.js App Router)
+// =============================
+// File: app/api/invite/validate/route.ts
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url)
+  const code = searchParams.get("code")
+  if (!code) return new Response(JSON.stringify({ valid: false, message: "No code provided" }), { status: 400 })
+
+  try {
+    // Forward to your backend validator (replace BACKEND_URL env)
+    const url = `${process.env.BACKEND_URL}/invite/validate?code=${encodeURIComponent(code)}`
+    const upstream = await fetch(url, { headers: { Accept: "application/json" }, cache: "no-store" })
+    if (!upstream.ok) {
+      const text = await upstream.text()
+      return new Response(JSON.stringify({ valid: false, message: text || "Validation failed" }), { status: 200 })
+    }
+    const data = await upstream.json()
+    // Expect backend to return { valid: boolean, message?: string }
+    return new Response(JSON.stringify({ valid: !!data.valid, message: data.message }), { status: 200 })
+  } catch (e: any) {
+    return new Response(JSON.stringify({ valid: false, message: e?.message || "Network error" }), { status: 200 })
+  }
+}
+
+// File: app/api/invite/request/route.ts
+export async function POST(req: Request) {
+  try {
+    const body = await req.json()
+    const { name, phone } = body || {}
+    if (!name || !phone) return new Response(JSON.stringify({ ok: false, error: "Missing name or phone" }), { status: 400 })
+
+    // Forward to your backend create-request endpoint
+    const upstream = await fetch(`${process.env.BACKEND_URL}/invite/request`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, phone }),
+    })
+
+    if (!upstream.ok) {
+      const text = await upstream.text()
+      return new Response(JSON.stringify({ ok: false, error: text || "Upstream error" }), { status: 502 })
+    }
+
+    const json = await upstream.json()
+    return new Response(JSON.stringify({ ok: true, ...json }), { status: 200 })
+  } catch (e: any) {
+    return new Response(JSON.stringify({ ok: false, error: e?.message || "Unexpected error" }), { status: 500 })
+  }
 }
