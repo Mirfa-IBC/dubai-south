@@ -2,11 +2,19 @@
 
 import { createClient } from "@supabase/supabase-js"
 
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { persistSession: false, autoRefreshToken: false } }
-)
+const supabaseUrl = process.env.SUPABASE_URL
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error("Missing Supabase configuration. Please set up Supabase integration in Project Settings.")
+}
+
+const supabase =
+  supabaseUrl && supabaseServiceKey
+    ? createClient(supabaseUrl, supabaseServiceKey, {
+        auth: { persistSession: false, autoRefreshToken: false },
+      })
+    : null
 
 /* ---------- helpers ---------- */
 const s = (fd: FormData, k: string): string | null => {
@@ -38,6 +46,14 @@ const d = (fd: FormData, k: string): string | null => {
 /* ---------- main action ---------- */
 export async function submitInvestorForm(formData: FormData) {
   try {
+    if (!supabase) {
+      console.error("Supabase not configured - missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY")
+      return {
+        success: false,
+        error: "Database not configured. Please contact support.",
+      }
+    }
+
     // Canonical residency
     const residency = s(formData, "residency_status")
     // if (residency === "UAE Resident") residency = "resident"
@@ -130,11 +146,7 @@ export async function submitInvestorForm(formData: FormData) {
     }
 
     /* ---------- insert ---------- */
-    const { data: inserted, error } = await supabase
-      .from("investor_submissions")
-      .insert(row)
-      .select("id")
-      .single()
+    const { data: inserted, error } = await supabase.from("investor_submissions").insert(row).select("id").single()
 
     if (error) {
       console.error("Supabase insert error:", error)

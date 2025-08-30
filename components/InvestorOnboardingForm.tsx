@@ -16,7 +16,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Loader2, Upload, CheckCircle } from "lucide-react"
 
-import { upload } from "@vercel/blob/client"
 import { submitInvestorForm } from "@/app/actions/submit-investor-form"
 
 /* -------------------- Upload helper (Vercel Blob + server route) -------------------- */
@@ -349,11 +348,12 @@ export default function InvestorOnboardingForm({ onClose = () => {} }: { onClose
     setValue("utm_medium", p.get("utm_medium") || "")
     setValue("utm_campaign", p.get("utm_campaign") || "")
     setValue("referral_code", p.get("ref") || "")
+    const fromSession = sessionStorage.getItem("mirfa_invite_code") || ""
+    if (fromSession) setValue("referral_code", fromSession)
   }, [setValue])
 
   const residency = watch("residency_status")
-  const fromSession = sessionStorage.getItem("mirfa_invite_code") || ""
-  if (fromSession) setValue("referral_code", fromSession)
+  
 
   const goNext = async () => {
     const fieldsByStep: Record<number, (keyof FormValues)[]> = {
