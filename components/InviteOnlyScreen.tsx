@@ -111,7 +111,7 @@ export default function InviteOnlyScreen({ reason }: InviteOnlyScreenProps) {
                   <label className="block text-sm font-light text-white/90 mb-2">Phone (WhatsApp)</label>
                   <input
                     className="w-full rounded-lg border border-white/20 bg-white/10 backdrop-blur-sm px-3 py-2.5 text-white placeholder-white/50 outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all"
-                    placeholder="e.g. +1 555 123 4567 or +971 50 123 4567"
+                    placeholder="e.g. +91 1234567890 or +971 50 123 4567"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     required
