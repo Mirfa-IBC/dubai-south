@@ -1,88 +1,35 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 
-const baseCashFlows = [
-  {
-    date: "2025-09-01",
-    monthsFromStart: 0,
-    amountFor50k: -50000,
-    note: "Initial Investment Deposit",
-    status: "completed",
-  },
-  { 
-    date: "2026-12-01", 
-    monthsFromStart: 15, // Fixed: Sep 2025 to Dec 2026 is 15 months
-    amountFor50k: 6656.52, 
-    note: "First Payout", 
-    status: "upcoming" 
-  },
-  {
-    date: "2027-10-01",
-    monthsFromStart: 25, // Fixed: Sep 2025 to Oct 2027 is 25 months
-    amountFor50k: 43343.48,
-    note: "Project Handover Principal Amount Back", // Fixed typo: Principle -> Principal
-    status: "upcoming",
-  },
-  { 
-    date: "2028-01-01", 
-    monthsFromStart: 28, // Fixed: Sep 2025 to Jan 2028 is 28 months
-    amountFor50k: 3527.22, 
-    note: "Quarterly Payout", 
-    status: "upcoming" 
-  },
-  { 
-    date: "2028-04-01", 
-    monthsFromStart: 31, // Fixed: Sep 2025 to Apr 2028 is 31 months
-    amountFor50k: 3527.22, 
-    note: "Quarterly Payout", 
-    status: "upcoming" 
-  },
-  { 
-    date: "2028-07-01", 
-    monthsFromStart: 34, // Fixed: Sep 2025 to Jul 2028 is 34 months
-    amountFor50k: 3527.22, 
-    note: "Quarterly Payout", 
-    status: "upcoming" 
-  },
-  { 
-    date: "2028-10-01", 
-    monthsFromStart: 37, // Fixed: Sep 2025 to Oct 2028 is 37 months
-    amountFor50k: 3527.22, 
-    note: "Quarterly Payout", 
-    status: "upcoming" 
-  },
-  { 
-    date: "2029-01-01", 
-    monthsFromStart: 40, // Fixed: Sep 2025 to Jan 2029 is 40 months
-    amountFor50k: 3527.22, 
-    note: "Quarterly Payout", 
-    status: "upcoming" 
-  },
-  { 
-    date: "2029-04-01", 
-    monthsFromStart: 43, // Fixed: Sep 2025 to Apr 2029 is 43 months
-    amountFor50k: 3527.22, 
-    note: "Quarterly Payout", 
-    status: "upcoming" 
-  },
-  { 
-    date: "2029-07-01", 
-    monthsFromStart: 46, // Added missing payment
-    amountFor50k: 3527.22, 
-    note: "Quarterly Payout", 
-    status: "upcoming" 
-  },
-  { 
-    date: "2029-10-01", 
-    monthsFromStart: 49, // Added final payment to match your original data
-    amountFor50k: 3527.22, 
-    note: "Final Payment", 
-    status: "upcoming" 
-  },
-];
+/* -------------------- Types -------------------- */
+type ScenarioKey = "conservative" | "realistic" | "optimistic"
+type ScenarioOrAll = ScenarioKey | "all"
+type CashFlow = { date: string; amountFor50k: number; note?: string }
+type ScenarioJSON = { label: string; cashFlows: CashFlow[] }
+type ScenariosJSON = { scenarios: Record<ScenarioKey, ScenarioJSON> }
+
+type Row = {
+  date: Date
+  dateISO: string
+  monthsFromStart: number
+  amount: number
+  note?: string
+  cumulative: number
+}
+type ScenarioComputed = {
+  key: ScenarioKey
+  label: string
+  rows: Row[]
+  totalIn: number
+  totalOut: number
+  net: number
+  moic: number
+  rate: number
+  payback: string
+}
 
 /* -------------------- XIRR -------------------- */
 function xirr(cashflows: { date: Date; amount: number }[], guess = 0.15): number {
@@ -111,6 +58,7 @@ function xirr(cashflows: { date: Date; amount: number }[], guess = 0.15): number
   return r
 }
 
+/* -------------------- Utils -------------------- */
 const AED = (n: number) =>
   n.toLocaleString("en-AE", { style: "currency", currency: "AED", maximumFractionDigits: 0 })
 
@@ -130,89 +78,121 @@ function downloadCSV(content: string, filename: string) {
   a.click()
   URL.revokeObjectURL(url)
 }
+function monthsBetween(a: Date, b: Date) {
+  const msPerMonth = (365.2425 / 12) * 24 * 60 * 60 * 1000
+  return (b.getTime() - a.getTime()) / msPerMonth
+}
 
-/* -------------------- VIEW -------------------- */
+const COLORS: Record<ScenarioKey, string> = {
+  conservative: "hsl(var(--chart-3))",
+  realistic:    "hsl(var(--chart-1))",
+  optimistic:   "hsl(var(--chart-2))",
+}
+
+/* -------------------- Component -------------------- */
 export default function RoiCalculator() {
   const [investmentAmount, setInvestmentAmount] = useState(50000)
+  const [view, setView] = useState<ScenarioOrAll>("realistic")
+  const [data, setData] = useState<ScenariosJSON | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
-  const calc = useMemo(() => {
+  // Load scenarios from JSON (ALL values come from JSON)
+  useEffect(() => {
+    let cancelled = false
+    fetch("/roi-scenarios.json", { cache: "no-store" })
+      .then(r => r.json())
+      .then((j: ScenariosJSON) => { if (!cancelled) setData(j) })
+      .catch(err => { if (!cancelled) setError("Failed to load ROI scenarios.") })
+    return () => { cancelled = true }
+  }, [])
+
+  const scenarios = useMemo(() => {
+    if (!data) return null
     const scale = investmentAmount / 50000
-    const flows = baseCashFlows
-      .map((cf) => ({
+
+    const compute = (key: ScenarioKey): ScenarioComputed => {
+      const { label, cashFlows } = data.scenarios[key]
+
+      // Normalize + scale
+      const rows0 = cashFlows.map(cf => ({
         date: new Date(cf.date + "T00:00:00Z"),
         dateISO: cf.date,
-        monthsFromStart: cf.monthsFromStart,
         amount: cf.amountFor50k * scale,
         note: cf.note,
-        status: cf.status,
-      }))
-      .sort((a, b) => a.date.getTime() - b.date.getTime())
+      })).sort((a,b)=>a.date.getTime()-b.date.getTime())
 
-    let cumulative = 0
-    const rows = flows.map((cf) => ({ ...cf, cumulative: (cumulative += cf.amount) }))
+      const t0 = rows0[0]?.date ?? new Date()
+      let cumulative = 0
+      const rows: Row[] = rows0.map(r => {
+        const cum = (cumulative += r.amount)
+        return {
+          date: r.date,
+          dateISO: r.dateISO,
+          monthsFromStart: Math.max(0, monthsBetween(t0, r.date)),
+          amount: r.amount,
+          note: r.note,
+          cumulative: cum,
+        }
+      })
 
-    const totalIn  = Math.abs(rows.filter((r) => r.amount < 0).reduce((s, r) => s + r.amount, 0))
-    const totalOut = rows.filter((r) => r.amount > 0).reduce((s, r) => s + r.amount, 0)
-    const net  = totalOut - totalIn
-    const moic = totalIn ? totalOut / totalIn : Number.NaN
-    const rate = xirr(rows.filter((r) => r.amount !== 0).map((r) => ({ date: r.date, amount: r.amount })))
-    const payback = rows.find((r) => r.cumulative >= 0)?.dateISO ?? "—"
+      const totalIn  = Math.abs(rows.filter(r => r.amount < 0).reduce((s, r) => s + r.amount, 0))
+      const totalOut = rows.filter(r => r.amount > 0).reduce((s, r) => s + r.amount, 0)
+      const net  = totalOut - totalIn
+      const moic = totalIn ? totalOut / totalIn : Number.NaN
+      const rate = xirr(rows.map(r => ({ date: r.date, amount: r.amount })))
+      const payback = rows.find(r => r.cumulative >= 0)?.dateISO ?? "—"
 
-    return { rows, totalIn, totalOut, net, moic, rate, payback }
-  }, [investmentAmount])
+      return { key, label, rows, totalIn, totalOut, net, moic, rate, payback }
+    }
 
-  const onDownload = () => {
-    downloadCSV(
-      toCSV(calc.rows.map((r) => ({ date: r.dateISO, amount: r.amount, cumulative: r.cumulative, note: r.note ?? "" }))),
-      "mirfa-roi-schedule.csv",
-    )
-  }
+    return {
+      conservative: compute("conservative"),
+      realistic:    compute("realistic"),
+      optimistic:   compute("optimistic"),
+    }
+  }, [data, investmentAmount])
 
-  /* ---- Chart config ---- */
+  if (error) return <div className="p-6 text-center text-destructive">{error}</div>
+  if (!scenarios) return <div className="p-6 text-center text-muted-foreground">Loading ROI scenarios…</div>
+
+  // Chart geometry
   const W = 900, H = 320, PAD = 56, AXIS_PAD = 40
-  const maxMonths = Math.max(...calc.rows.map((r) => r.monthsFromStart ?? 0), 1)
-  const denom = Math.max(1e-9, calc.totalOut)
-  const points = calc.rows.map((r) => {
-    const x = PAD + (r.monthsFromStart / maxMonths) * (W - 2 * PAD)
-    const y = H - AXIS_PAD - PAD - ((r.cumulative + calc.totalIn) / denom) * (H - 2 * PAD - AXIS_PAD)
-    return { ...r, x, y }
-  })
-  const d = points.map((p, i) => `${i ? "L" : "M"} ${p.x} ${p.y}`).join(" ")
-  const approxLabelW = 70
-  const maxLabels = Math.max(3, Math.floor((W - 2 * PAD) / approxLabelW))
-  const dateStep = Math.max(1, Math.ceil(points.length / maxLabels))
-  const minAmountLabelGap = 60
-  const largestAmountsIdx = (() => {
-    const arr = points
-      .map((p, i) => ({ i, v: Math.abs(p.amount) }))
-      .filter((x) => x.v > 1e-9)
-      .sort((a, b) => b.v - a.v)
-      .slice(0, 3)
-      .map((x) => x.i)
-    const firstNZ = points.findIndex((p) => Math.abs(p.amount) > 1e-9)
-    const lastNZ = [...points].reverse().findIndex((p) => Math.abs(p.amount) > 1e-9)
-    const lastIdx = lastNZ === -1 ? -1 : points.length - 1 - lastNZ
-    const set = new Set<number>(arr)
-    if (firstNZ >= 0) set.add(firstNZ)
-    if (lastIdx >= 0) set.add(lastIdx)
-    return set
-  })()
-  const amountLabelSet = (() => {
-    const keep = new Set<number>()
-    let lastX = Number.NEGATIVE_INFINITY
-    points.forEach((p, i) => {
-      if (Math.abs(p.amount) < 1e-9) return
-      if (p.x - lastX >= minAmountLabelGap || largestAmountsIdx.has(i)) {
-        keep.add(i)
-        lastX = p.x
-      }
-    })
-    return keep
-  })()
-  const clampY = (y: number) => Math.max(PAD + 15, Math.min(H - AXIS_PAD - 15, y))
-  const zeroY = H - AXIS_PAD - PAD - ((0 + calc.totalIn) / denom) * (H - 2 * PAD - AXIS_PAD)
   const primaryColor = "hsl(var(--primary))"
   const mutedColor   = "hsl(var(--muted))"
+
+  const selectedKeys = (view === "all") ? (["conservative","realistic","optimistic"] as const) : ([view] as const)
+  const selectedScenarios = selectedKeys.map(k => scenarios[k])
+
+  const maxMonths = Math.max(1, ...selectedScenarios.flatMap(s => s.rows.map(r => r.monthsFromStart ?? 0)))
+  const allCum = selectedScenarios.flatMap(s => s.rows.map(r => r.cumulative))
+  const minCum = Math.min(...allCum, 0)
+  const maxCum = Math.max(...allCum, 0)
+  const ySpan = Math.max(1e-9, maxCum - minCum)
+
+  const xFor = (m: number) => PAD + (m / maxMonths) * (W - 2 * PAD)
+  const yFor = (v: number) => {
+    const t = (v - minCum) / ySpan
+    return PAD + (1 - t) * (H - 2 * PAD - AXIS_PAD)
+  }
+  const zeroY = yFor(0)
+
+  function buildPath(rows: Row[]) {
+    const pts = rows.map(r => ({...r, x: xFor(r.monthsFromStart), y: yFor(r.cumulative)}))
+    const d = pts.map((p, i) => `${i ? "L" : "M"} ${p.x} ${p.y}`).join(" ")
+    return { pts, d }
+  }
+
+  const chartSeries = selectedScenarios.map(s => {
+    const { pts, d } = buildPath(s.rows)
+    return { key: s.key, label: s.label, color: COLORS[s.key], pts, d, s }
+  })
+
+  const active = view === "all" ? scenarios.realistic : scenarios[view as ScenarioKey]
+
+  const onDownload = () => {
+    const rows = active.rows.map(r => ({ date: r.dateISO, amount: r.amount, cumulative: r.cumulative, note: r.note ?? "" }))
+    downloadCSV(toCSV(rows), `mirfa-roi-schedule-${active.key}.csv`)
+  }
 
   return (
     <Card className="rounded-2xl border shadow-sm p-4 sm:p-6 md:p-8 overflow-visible">
@@ -250,105 +230,146 @@ export default function RoiCalculator() {
             <span className="text-xs text-muted-foreground">Step: AED 25,000 • Range: AED 50,000 – 1,000,000</span>
           </div>
         </div>
+
+        {/* Scenario segmented control */}
         <div className="flex flex-col items-end gap-2">
-          <p className="text-xs text-muted-foreground">Annual target (info): ~20.8%</p>
+          <div className="inline-flex rounded-full border p-1 bg-background/70 backdrop-blur supports-[backdrop-filter]:bg-background/50">
+            {(["conservative","realistic","optimistic","all"] as ScenarioOrAll[]).map(k => (
+              <button
+                key={k}
+                onClick={()=>setView(k)}
+                className={[
+                  "px-3 sm:px-4 py-1.5 text-xs sm:text-sm rounded-full transition",
+                  view===k ? "bg-primary text-primary-foreground shadow" : "hover:bg-muted"
+                ].join(" ")}
+                aria-pressed={view===k}
+              >
+                {k==="all" ? "Compare" : scenarios[k].label}
+              </button>
+            ))}
+          </div>
           <Button onClick={onDownload} variant="outline" size="sm" className="text-xs bg-transparent">
-            Download CSV
+            Download CSV ({view==="all" ? scenarios.realistic.label : scenarios[view as ScenarioKey].label})
           </Button>
         </div>
       </div>
 
-      {/* KPIs (numbers flow out of tile) */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mt-6 sm:mt-8">
-        <Kpi label="XIRR"  value={isFinite(calc.rate) ? `${(calc.rate * 100).toFixed(2)}%` : "—"} accent="text-primary" />
-        <Kpi label="MOIC"  value={isFinite(calc.moic) ? `${calc.moic.toFixed(2)}×` : "—"} accent="text-primary" />
-        <Kpi label="Total Invested" value={AED(calc.totalIn)} />
-        <Kpi label="Total Returned" value={AED(calc.totalOut)} />
-        <Kpi label="Net Profit" value={AED(calc.net)} accent={calc.net >= 0 ? "text-green-600" : "text-red-600"} />
-        <Kpi label="Payback" value={calc.payback} />
-      </div>
+      {/* KPIs */}
+      {view === "all" ? (
+        <div className="grid grid-cols-3 gap-2 sm:gap-3 mt-4 sm:mt-6">
+          {(["conservative","realistic","optimistic"] as const).map(k => {
+            const s = scenarios[k]
+            return (
+              <div key={k} className="rounded-2xl border p-3 sm:p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium opacity-70">{s.label}</span>
+                  <span className="inline-block w-2.5 h-2.5 rounded-full" style={{ background: COLORS[k] }} />
+                </div>
+                <div className="text-lg sm:text-xl font-semibold leading-tight mt-1">
+                  {isFinite(s.rate) ? `${(s.rate * 100).toFixed(1)}%` : "—"}
+                </div>
+                <div className="text-[11px] sm:text-xs text-muted-foreground mt-1">XIRR • Payback {s.payback}</div>
+              </div>
+            )
+          })}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mt-6 sm:mt-8">
+          <Kpi label={`XIRR — ${active.label}`} value={isFinite(active.rate) ? `${(active.rate * 100).toFixed(2)}%` : "—"} />
+          <Kpi label="MOIC" value={isFinite(active.moic) ? `${active.moic.toFixed(2)}×` : "—"} />
+          <Kpi label="Total Invested" value={AED(active.totalIn)} />
+          <Kpi label="Total Returned" value={AED(active.totalOut)} />
+          <Kpi label="Net Profit" value={AED(active.net)} />
+          <Kpi label="Payback" value={active.payback} />
+        </div>
+      )}
 
       {/* Chart */}
       <div className="mt-6 sm:mt-8">
-        <h3 className="text-sm font-medium mb-3 sm:mb-4">Investment Journey & Cash Flow Timeline</h3>
+        <h3 className="text-sm font-medium mb-3 sm:mb-4">
+          {view==="all" ? "Scenario Comparison — Cumulative Cash Flow" : `${active.label} — Investment Journey`}
+        </h3>
         <div className="w-full">
-          <svg
-            viewBox={`0 0 ${W} ${H}`}
-            className="w-full h-auto"
-            role="img"
-            aria-label="Cumulative cash flow chart"
-            preserveAspectRatio="xMidYMid meet"
-          >
+          <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" role="img" aria-label="Cumulative cash flow chart" preserveAspectRatio="xMidYMid meet">
             <defs>
               <pattern id="grid" width="90" height="40" patternUnits="userSpaceOnUse">
                 <path d="M 90 0 L 0 0 0 40" fill="none" stroke="hsl(var(--muted-foreground))" strokeWidth="0.5" opacity="0.1" />
               </pattern>
-              <linearGradient id="fillArea" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor={primaryColor} stopOpacity="0.25" />
-                <stop offset="100%" stopColor={primaryColor} stopOpacity="0.05" />
-              </linearGradient>
             </defs>
 
             <rect width="100%" height="100%" fill="url(#grid)" />
-
             <line x1={PAD} y1={H - AXIS_PAD} x2={W - PAD} y2={H - AXIS_PAD} stroke="hsl(var(--border))" strokeWidth={2} />
             <line x1={PAD} y1={PAD} x2={PAD} y2={H - AXIS_PAD} stroke="hsl(var(--border))" strokeWidth={1} opacity={0.5} />
-
             <line x1={PAD} y1={zeroY} x2={W - PAD} y2={zeroY} stroke="hsl(var(--muted-foreground))" strokeWidth={1.5} opacity={0.6} strokeDasharray="4,4" />
 
-            {points.length > 1 && (
-              <>
-                <path d={`${d} L ${points[points.length - 1].x} ${H - AXIS_PAD} L ${points[0].x} ${H - AXIS_PAD} Z`} fill="url(#fillArea)" />
-                <path d={d} fill="none" stroke={primaryColor} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
-              </>
-            )}
+            {/* Series */}
+            {(["conservative","realistic","optimistic"] as const)
+              .filter(k => view === "all" || k === view)
+              .map(k => {
+                const s = scenarios[k]
+                const pts = s.rows.map(r => ({...r, x: PAD + (r.monthsFromStart / maxMonths) * (W - 2*PAD), y: PAD + (1 - (r.cumulative - minCum) / ySpan) * (H - 2*PAD - AXIS_PAD) }))
+                const d = pts.map((p,i)=>`${i?'L':'M'} ${p.x} ${p.y}`).join(" ")
+                return (
+                  <g key={k}>
+                    <path d={d} fill="none" stroke={COLORS[k]} strokeWidth={view==="all" ? 2.25 : 3} strokeLinecap="round" strokeLinejoin="round" />
+                    {pts.map((p,i)=>(
+                      <circle key={i} cx={p.x} cy={p.y} r={view==="all" ? 3.5 : 5} fill={COLORS[k]} stroke="white" strokeWidth={view==="all" ? 1.5 : 2.5} />
+                    ))}
+                  </g>
+                )
+              })
+            }
 
-            {points.map((p, i) => (
-              <g key={i}>
-                <line x1={p.x} y1={H - AXIS_PAD - 6} x2={p.x} y2={H - AXIS_PAD + 6} stroke="hsl(var(--muted-foreground))" strokeWidth={1.5} opacity={0.6} />
-                <circle cx={p.x} cy={p.y} r={5} fill={primaryColor} stroke="white" strokeWidth={2.5} />
-                {(i % dateStep === 0 || i === 0 || i === points.length - 1) && (
-                  <text x={p.x} y={H - AXIS_PAD + 18} textAnchor="middle" className="text-[11px] font-medium fill-muted-foreground">
-                    {new Date(p.dateISO + "T00:00:00Z").toLocaleDateString("en-GB", { month: "short", year: "2-digit" })}
-                  </text>
-                )}
-                {/* amount labels */}
-                {(() => {
-                  const show = amountLabelSet.has(i)
-                  if (!show) return null
-                  const dy = p.amount > 0 ? -15 : 18
-                  const jitter = i % 3 === 0 ? -6 : i % 3 === 1 ? 0 : 6
-                  const yy = clampY(p.y + dy + jitter)
-                  return (
-                    <text
-                      x={p.x}
-                      y={yy}
-                      textAnchor="middle"
-                      className="text-[11px] font-semibold"
-                      fill={p.amount > 0 ? "hsl(var(--chart-2))" : "hsl(var(--destructive))"}
-                      pointerEvents="none"
-                    >
-                      {AED(p.amount)}
+            {/* X ticks (use Realistic as anchor) */}
+            {(() => {
+              const anchor = scenarios.realistic.rows
+              const approxLabelW = 70
+              const maxLabels = Math.max(3, Math.floor((W - 2 * PAD) / approxLabelW))
+              const dateStep = Math.max(1, Math.ceil(anchor.length / maxLabels))
+              return anchor.map((r, i) => (
+                <g key={i}>
+                  <line x1={PAD + (r.monthsFromStart / maxMonths) * (W - 2*PAD)} y1={H - AXIS_PAD - 6} x2={PAD + (r.monthsFromStart / maxMonths) * (W - 2*PAD)} y2={H - AXIS_PAD + 6} stroke="hsl(var(--muted-foreground))" strokeWidth={1.25} opacity={0.6} />
+                  {(i % dateStep === 0 || i === 0 || i === anchor.length - 1) && (
+                    <text x={PAD + (r.monthsFromStart / maxMonths) * (W - 2*PAD)} y={H - AXIS_PAD + 18} textAnchor="middle" className="text-[11px] font-medium fill-muted-foreground">
+                      {new Date(r.dateISO + "T00:00:00Z").toLocaleDateString("en-GB", { month: "short", year: "2-digit" })}
                     </text>
-                  )
-                })()}
-              </g>
-            ))}
-
-            <rect x={PAD} y={H - AXIS_PAD - 2} width={(W - 2 * PAD) * 0.4} height={4} fill={primaryColor} opacity={0.3} rx={2} />
-            <text x={PAD + 10} y={H - AXIS_PAD - 8} className="text-[10px] font-medium fill-primary">Investment Period Progress</text>
+                  )}
+                </g>
+              ))
+            })()}
           </svg>
+
+          {/* Legend — tappable chips */}
+          <div className="flex flex-wrap gap-3 mt-3">
+            {(["conservative","realistic","optimistic"] as const).map(k => (
+              <button
+                key={k}
+                onClick={()=> setView(v => v==="all" ? (k as ScenarioOrAll) : "all")}
+                className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs hover:bg-muted transition"
+                aria-label={`Toggle ${scenarios[k].label}`}
+                title={view==="all" ? `Focus on ${scenarios[k].label}` : "Compare all scenarios"}
+              >
+                <span className="inline-block w-2.5 h-2.5 rounded-full" style={{ background: COLORS[k] }} />
+                {scenarios[k].label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Schedule — responsive: table on md+, stacked cards on mobile */}
+      {/* Schedule — bound to current focus (Realistic in Compare) */}
       <div className="mt-6 sm:mt-8">
-        <h3 className="text-sm font-medium mb-3 sm:mb-4">Investment Milestones &amp; Cash Flow Schedule</h3>
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <h3 className="text-sm font-medium">Investment Milestones &amp; Cash Flow Schedule</h3>
+          {view === "all" && (
+            <div className="text-xs text-muted-foreground">Showing: <span className="font-medium">{scenarios.realistic.label}</span></div>
+          )}
+        </div>
 
         {/* Mobile: stacked cards */}
         <div className="md:hidden space-y-3">
-          {calc.rows.map((r, i) => (
-            <div key={i} className="rounded-xl border p-3 flex items-start justify-between gap-3">
+          {active.rows.map((r, i) => (
+            <div key={i} className={["rounded-xl border p-3 flex items-start justify-between gap-3", i % 2 === 0 ? "bg-muted/20" : ""].join(" ")}>
               <div className="space-y-1">
                 <div className="font-medium">
                   {new Date(r.dateISO + "T00:00:00Z").toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
@@ -385,7 +406,7 @@ export default function RoiCalculator() {
               </tr>
             </thead>
             <tbody>
-              {calc.rows.map((r, i) => (
+              {active.rows.map((r, i) => (
                 <tr key={i} className={i % 2 === 0 ? "bg-muted/30" : ""}>
                   <td className="py-2 px-3 font-mono text-xs whitespace-nowrap">
                     {new Date(r.dateISO + "T00:00:00Z").toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
@@ -408,13 +429,10 @@ export default function RoiCalculator() {
 }
 
 /* -------------------- KPI TILE -------------------- */
-/** Numbers visually “flow out” using absolute positioning + overflow-visible */
-function Kpi({ label, value, accent }: { label: string; value: string; accent?: string }) {
+function Kpi({ label, value }: { label: string; value: string }) {
   return (
-    // ⬇️ change overflow-hidden → overflow-visible and tighten spacing
     <div className="relative overflow-visible rounded-2xl border p-3 sm:p-4 bg-background">
       <div className="text-xs uppercase tracking-wide opacity-70">{label}</div>
-      {/* ⬇️ smaller on mobile + tighter line height to avoid clipping */}
       <div className="text-xl sm:text-2xl font-semibold mt-1 leading-tight break-words">
         {value}
       </div>
