@@ -5,10 +5,10 @@ import DubaiInvestmentLanding from "@/components/DubaiInvestmentLanding"
 import InviteOnlyScreen from "@/components/InviteOnlyScreen"
 
 // Build the current origin from request headers (for server-side fetch)
-function currentOrigin() {
-  const h = headers()
-  const proto = h.get("x-forwarded-proto") ?? "http"
-  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000"
+async function currentOrigin() {
+  const h = await headers()
+  const proto = await h.get("x-forwarded-proto") ?? "http"
+  const host = await (h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000")
   return `${proto}://${host}`
 }
 
@@ -17,7 +17,7 @@ async function validateInviteCode(code: string): Promise<{ valid: boolean; messa
     // If we're on the server, use absolute URL. If somehow executed in the browser, let it stay relative.
     const base =
       typeof window === "undefined"
-        ? currentOrigin()
+        ? await currentOrigin()
         : "" // browser: relative is fine
 
     const url = new URL(`/api/invite/validate?code=${encodeURIComponent(code)}`, base || undefined).toString()
