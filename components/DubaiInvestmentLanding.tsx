@@ -6,6 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import RoiCalculator from "@/components/RoiCalculator"
 import InvestorOnboardingForm from "@/components/InvestorOnboardingForm"
+import { SiInstagram, SiYoutube } from '@icons-pack/react-simple-icons'
+
+
 import {
   Shield,
   TrendingUp,
@@ -21,14 +24,18 @@ import {
   CreditCard,
   CheckCircle2,
   ArrowRight,
+  ExternalLink,
 } from "lucide-react"
+
+const SOCIAL = {
+  instagram: "https://www.instagram.com/mirfaibc/",              // ← replace with your real handle
+  youtube:   "https://www.youtube.com/@mirfaibc",           // ← replace with your real handle
+} as const
 
 export default function DubaiInvestmentLanding() {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const handleApplyNow = () => {
-    setIsModalOpen(true)
-  }
+  const handleApplyNow = () => setIsModalOpen(true)
 
   const portfolioProjects = [
     {
@@ -44,6 +51,7 @@ export default function DubaiInvestmentLanding() {
       statusColor: "bg-green-500",
       image: "/images/dubai-south-luxury-development-with-modern-archite.png",
       features: ["Prime Dubai South Location", "Modern Amenities", "High ROI Potential", "Limited to 20 Investors"],
+      detailUrl: "/projects/g6-dubai-south",
     },
     {
       id: 2,
@@ -58,6 +66,7 @@ export default function DubaiInvestmentLanding() {
       statusColor: "bg-red-500",
       image: "/images/the-borough-jvc-luxury-residential-development.png",
       features: ["Prime JVC Location", "Modern Amenities", "High ROI Potential", "Proven Developer"],
+      detailUrl: "https://www.mirfa.com/the-borough",
     },
     {
       id: 3,
@@ -72,6 +81,7 @@ export default function DubaiInvestmentLanding() {
       statusColor: "bg-red-500",
       image: "/images/numa-reserve-meydan-luxury-development.png",
       features: ["Meydan Prestige", "Luxury Amenities", "Racing Heritage", "Premium Location"],
+      detailUrl: "https://www.mirfa.com/numa-reserve",
     },
     {
       id: 4,
@@ -86,6 +96,7 @@ export default function DubaiInvestmentLanding() {
       statusColor: "bg-red-500",
       image: "/images/ashton-park-second-jvc-modern-apartments.png",
       features: ["Phase 2 Enhancement", "Premium Finishes", "JVC Community", "Proven Success"],
+      detailUrl: "https://www.mirfa.com/ashton-park-the-second",
     },
     {
       id: 5,
@@ -100,6 +111,7 @@ export default function DubaiInvestmentLanding() {
       statusColor: "bg-red-500",
       image: "/images/ashton-park-residences-jvc-contemporary-design.png",
       features: ["Contemporary Design", "Comprehensive Amenities", "Vibrant Community", "Completed Success"],
+      detailUrl: "https://www.mirfa.com/ashton-park-apartments",
     },
     {
       id: 6,
@@ -114,6 +126,7 @@ export default function DubaiInvestmentLanding() {
       statusColor: "bg-red-500",
       image: "/images/ashton-park-townhouses-jvc-family-homes.png",
       features: ["Spacious Family Homes", "Private Gardens", "Premium Facilities", "Exclusive Community"],
+      detailUrl: "https://www.mirfa.com/ashton-park-elegance-townhouse",
     },
     {
       id: 7,
@@ -128,8 +141,12 @@ export default function DubaiInvestmentLanding() {
       statusColor: "bg-red-500",
       image: "/images/oak-by-mirfa-furjan-sustainable-living.png",
       features: ["Inaugural Project", "Innovative Design", "Sustainable Living", "Established Community"],
+      detailUrl: "https://www.mirfa.com/oak-by-mirfa",
     },
-  ]
+  ] as const
+
+  const activeProjects = portfolioProjects.filter(p => p.status === "Active Investment")
+  const pastProjects = portfolioProjects.filter(p => p.status !== "Active Investment")
 
   const investorJourney = [
     {
@@ -182,21 +199,38 @@ export default function DubaiInvestmentLanding() {
             <img src="images/logo.png" alt="Mirfa Logo" className="h-8" />
           </div>
           <nav className="hidden md:flex items-center space-x-8 text-white/90 text-sm font-light">
-            <a href="#about" className="hover:text-white transition-colors">
-              ABOUT
-            </a>
-            <a href="#location" className="hover:text-white transition-colors">
-              LOCATION
-            </a>
-            <a href="#portfolio" className="hover:text-white transition-colors">
-              PORTFOLIO
-            </a>
-            <a href="#contact" className="hover:text-white transition-colors">
-              CONTACT
-            </a>
+            <a href="#about" className="hover:text-white transition-colors">ABOUT</a>
+            <a href="#location" className="hover:text-white transition-colors">LOCATION</a>
+            <a href="#portfolio" className="hover:text-white transition-colors">PORTFOLIO</a>
+            <a href="#contact" className="hover:text-white transition-colors">CONTACT</a>
           </nav>
+
           <div className="flex items-center space-x-4">
-            {/* <ThemeToggle /> */}
+            {/* Social icons */}
+            <a
+              href={SOCIAL.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Follow on Instagram"
+              className="hidden md:inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition"
+              data-analytics="social-instagram-header"
+              title="Instagram"
+            >
+              <SiInstagram className="h-5 w-5 text-white" />
+            </a>
+            <a
+              href={SOCIAL.youtube}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Subscribe on YouTube"
+              className="hidden md:inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition"
+              data-analytics="social-youtube-header"
+              title="YouTube"
+            >
+              <SiYoutube className="h-5 w-5 text-white" />
+            </a>
+
+            {/* Primary CTA */}
             <Button
               variant="outline"
               className="border-white/30 text-white hover:bg-white hover:text-black transition-all bg-transparent"
@@ -205,9 +239,11 @@ export default function DubaiInvestmentLanding() {
               APPLY NOW
             </Button>
           </div>
+
         </div>
       </header>
 
+      {/* Hero */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <img
@@ -254,18 +290,15 @@ export default function DubaiInvestmentLanding() {
             SECURE YOUR INVESTMENT
           </Button>
         </div>
-
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/60">
-          <div className="flex flex-col items-center space-y-2"></div>
-        </div>
       </section>
 
+      {/* About */}
       <section className="py-24 bg-white" id="about">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-4xl md:text-5xl font-light mb-8 text-gray-900"> G6 Excellence Dubai South</h2>
             <p className="text-lg text-gray-600 font-light leading-relaxed max-w-2xl mx-auto mb-16">
-              G6 Dubai South  development represents a unique opportunity to invest in one of the region's most
+              G6 Dubai South development represents a unique opportunity to invest in one of the region's most
               promising projects, backed by institutional-grade protections and transparent reporting in Dubai's
               fastest-growing district.
             </p>
@@ -303,6 +336,7 @@ export default function DubaiInvestmentLanding() {
         </div>
       </section>
 
+      {/* Location */}
       <section id="location" className="py-24 bg-gray-50">
         <div className="container mx-auto px-6">
           <div className="max-w-7xl mx-auto">
@@ -318,56 +352,56 @@ export default function DubaiInvestmentLanding() {
               <img
                 src="/dubai-south-location-map.png"
                 alt="Dubai South Location Map"
-                className="w-full h-[600px] md:h-[700px] object-cover"
+                className="w-full h-[480px] md:h-[700px] object-cover"
               />
-              <div className="p-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="p-6 md:p-12">
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                   <div className="text-center">
-                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Globe className="h-8 w-8 text-primary" />
+                    <div className="w-14 h-14 md:w-16 md:h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
+                      <Globe className="h-7 w-7 md:h-8 md:w-8 text-primary" />
                     </div>
-                    <div className="text-2xl font-light text-gray-900 mb-2">5 MIN</div>
-                    <div className="text-sm text-gray-600 font-light">TO AL MAKTOUM AIRPORT</div>
-                    <div className="text-xs text-gray-500 mt-1">World's largest airport by 2030</div>
+                    <div className="text-xl md:text-2xl font-light text-gray-900 mb-1 md:mb-2">5 MIN</div>
+                    <div className="text-xs md:text-sm text-gray-600 font-light">TO AL MAKTOUM AIRPORT</div>
+                    <div className="text-[10px] md:text-xs text-gray-500 mt-1">World's largest airport by 2030</div>
                   </div>
                   <div className="text-center">
-                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <MapPin className="h-8 w-8 text-primary" />
+                    <div className="w-14 h-14 md:w-16 md:h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
+                      <MapPin className="h-7 w-7 md:h-8 md:w-8 text-primary" />
                     </div>
-                    <div className="text-2xl font-light text-gray-900 mb-2">ADJACENT</div>
-                    <div className="text-sm text-gray-600 font-light">TO EXPO CITY DUBAI</div>
-                    <div className="text-xs text-gray-500 mt-1">Global business & innovation hub</div>
+                    <div className="text-xl md:text-2xl font-light text-gray-900 mb-1 md:mb-2">ADJACENT</div>
+                    <div className="text-xs md:text-sm text-gray-600 font-light">TO EXPO CITY DUBAI</div>
+                    <div className="text-[10px] md:text-xs text-gray-500 mt-1">Global business & innovation hub</div>
                   </div>
                   <div className="text-center">
-                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <TrendingUp className="h-8 w-8 text-primary" />
+                    <div className="w-14 h-14 md:w-16 md:h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
+                      <TrendingUp className="h-7 w-7 md:h-8 md:w-8 text-primary" />
                     </div>
-                    <div className="text-2xl font-light text-gray-900 mb-2">CONNECTED</div>
-                    <div className="text-sm text-gray-600 font-light">TO METRO NETWORK</div>
-                    <div className="text-xs text-gray-500 mt-1">Direct access to Dubai Metro</div>
+                    <div className="text-xl md:text-2xl font-light text-gray-900 mb-1 md:mb-2">CONNECTED</div>
+                    <div className="text-xs md:text-sm text-gray-600 font-light">TO METRO NETWORK</div>
+                    <div className="text-[10px] md:text-xs text-gray-500 mt-1">Direct access to Dubai Metro</div>
                   </div>
                   <div className="text-center">
-                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <CheckCircle className="h-8 w-8 text-primary" />
+                    <div className="w-14 h-14 md:w-16 md:h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
+                      <CheckCircle className="h-7 w-7 md:h-8 md:w-8 text-primary" />
                     </div>
-                    <div className="text-2xl font-light text-gray-900 mb-2">FREE ZONE</div>
-                    <div className="text-sm text-gray-600 font-light">BUSINESS ADVANTAGES</div>
-                    <div className="text-xs text-gray-500 mt-1">100% foreign ownership</div>
+                    <div className="text-xl md:text-2xl font-light text-gray-900 mb-1 md:mb-2">FREE ZONE</div>
+                    <div className="text-xs md:text-sm text-gray-600 font-light">BUSINESS ADVANTAGES</div>
+                    <div className="text-[10px] md:text-xs text-gray-500 mt-1">100% foreign ownership</div>
                   </div>
                 </div>
 
-                <div className="mt-12 pt-8 border-t border-gray-100">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div className="mt-10 md:mt-12 pt-6 md:pt-8 border-t border-gray-100">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 text-center">
                     <div>
-                      <div className="text-lg font-light text-gray-900 mb-2">25 MIN TO DOWNTOWN</div>
+                      <div className="text-base md:text-lg font-light text-gray-900 mb-1">25 MIN TO DOWNTOWN</div>
                       <div className="text-sm text-gray-600">Direct highway access to Dubai's business district</div>
                     </div>
                     <div>
-                      <div className="text-lg font-light text-gray-900 mb-2">15 MIN TO DUBAI MARINA</div>
+                      <div className="text-base md:text-lg font-light text-gray-900 mb-1">15 MIN TO DUBAI MARINA</div>
                       <div className="text-sm text-gray-600">Quick access to luxury waterfront living</div>
                     </div>
                     <div>
-                      <div className="text-lg font-light text-gray-900 mb-2">30 MIN TO PALM JUMEIRAH</div>
+                      <div className="text-base md:text-lg font-light text-gray-900 mb-1">30 MIN TO PALM JUMEIRAH</div>
                       <div className="text-sm text-gray-600">Easy reach to iconic Dubai attractions</div>
                     </div>
                   </div>
@@ -378,6 +412,7 @@ export default function DubaiInvestmentLanding() {
         </div>
       </section>
 
+      {/* Portfolio */}
       <section id="portfolio" className="py-24 bg-white">
         <div className="container mx-auto px-6">
           <div className="text-center mb-20">
@@ -387,77 +422,152 @@ export default function DubaiInvestmentLanding() {
             </p>
           </div>
 
-          <div className="space-y-32">
-            {portfolioProjects.map((project, index) => (
-              <div
-                key={project.id}
-                className={`flex flex-col ${index % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"} gap-16 items-center`}
-              >
-                <div className="w-full lg:w-1/2">
-                  <div className="relative overflow-hidden">
-                    <img
-                      src={project.image || "/placeholder.svg"}
-                      alt={`${project.name} development`}
-                      className="w-full h-[400px] lg:h-[500px] object-cover"
-                    />
-                  </div>
-                </div>
-
-                <div className="w-full lg:w-1/2 space-y-8">
-                  <div>
-                    <h3 className="text-3xl md:text-4xl font-light mb-4 text-gray-900">{project.name}</h3>
-                    <div className="text-gray-600 font-light mb-6">{project.location}</div>
-                    <p className="text-gray-600 font-light leading-relaxed text-lg">{project.description}</p>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-8">
-                    <div>
-                      <div className="text-2xl font-light text-primary mb-1">{project.irr}</div>
-                      {project.status === "Active Investment" ? (
-                        <div className="text-xs text-gray-500 font-light tracking-wider">TARGET IRR</div>
-                        ) : (
-                          <div className="text-xs text-gray-500 font-light tracking-wider">Achived IRR</div>
-                        )}
-                      
+          {/* Open for Investment */}
+          {activeProjects.length > 0 && (
+            <div className="space-y-12 mb-24">
+              <h3 className="text-2xl md:text-3xl font-light text-gray-900 text-center">Open for Investment</h3>
+              <div className="mt-10 space-y-24">
+                {activeProjects.map((project, index) => (
+                  <div
+                    key={project.id}
+                    className={`flex flex-col ${index % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"} gap-10 lg:gap-16 items-center`}
+                  >
+                    <div className="w-full lg:w-1/2">
+                      <div className="relative overflow-hidden rounded-lg">
+                        <img
+                          src={project.image || "/placeholder.svg"}
+                          alt={`${project.name} development`}
+                          className="w-full h-[320px] md:h-[420px] lg:h-[500px] object-cover"
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <div className="text-lg font-light text-gray-900 mb-1">{project.investment}</div>
-                      <div className="text-xs text-gray-500 font-light tracking-wider">MIN INVESTMENT</div>
+
+                    <div className="w-full lg:w-1/2 space-y-6 md:space-y-8">
+                      <div>
+                        <div className="inline-flex items-center gap-2 mb-3">
+                          <span className="px-3 py-1 rounded-full text-xs font-medium text-white bg-green-600">
+                            {project.status}
+                          </span>
+                        </div>
+                        <h4 className="text-3xl md:text-4xl font-light mb-3 text-gray-900">{project.name}</h4>
+                        <div className="text-gray-600 font-light mb-4">{project.location}</div>
+                        <p className="text-gray-600 font-light leading-relaxed text-base md:text-lg">
+                          {project.description}
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-6 md:gap-8">
+                        <div>
+                          <div className="text-2xl font-light text-primary mb-1">{project.irr}</div>
+                          <div className="text-[11px] md:text-xs text-gray-500 font-light tracking-wider">TARGET IRR</div>
+                        </div>
+                        <div>
+                          <div className="text-lg font-light text-gray-900 mb-1">{project.investment}</div>
+                          <div className="text-[11px] md:text-xs text-gray-500 font-light tracking-wider">MIN INVESTMENT</div>
+                        </div>
+                        <div>
+                          <div className="text-lg font-light text-gray-900 mb-1">{project.timeline}</div>
+                          <div className="text-[11px] md:text-xs text-gray-500 font-light tracking-wider">TIMELINE</div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                        <Button
+                          variant="outline"
+                          className="bg-primary hover:bg-primary/90 text-black font-medium"
+                          onClick={handleApplyNow}
+                        >
+                          INVEST NOW
+                        </Button>
+                        {/* <Button asChild variant="outline" className="bg-transparent">
+                          <a
+                            href={project.detailUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`View details for ${project.name}`}
+                          >
+                            View Details <ExternalLink className="ml-2 h-4 w-4" />
+                          </a>
+                        </Button> */}
+                      </div>
                     </div>
-                    <div>
-                      <div className="text-lg font-light text-gray-900 mb-1">{project.timeline}</div>
-                      <div className="text-xs text-gray-500 font-light tracking-wider">TIMELINE</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Past Projects */}
+          <div className="space-y-12">
+            <h3 className="text-2xl md:text-3xl font-light text-gray-900 text-center">Past Projects</h3>
+            <div className="mt-10 space-y-24">
+              {pastProjects.map((project, index) => (
+                <div
+                  key={project.id}
+                  className={`flex flex-col ${index % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"} gap-10 lg:gap-16 items-center`}
+                >
+                  <div className="w-full lg:w-1/2">
+                    <div className="relative overflow-hidden rounded-lg">
+                      <img
+                        src={project.image || "/placeholder.svg"}
+                        alt={`${project.name} development`}
+                        className="w-full h-[320px] md:h-[420px] lg:h-[500px] object-cover"
+                      />
                     </div>
                   </div>
 
-                  <div className="pt-4">
-                    {project.status === "Active Investment" ? (
-                      <Button
-                        variant="outline"
-                        className="bg-primary hover:bg-primary/90 text-black font-medium"
-                        onClick={handleApplyNow}
-                      >
-                        INVEST NOW
-                      </Button>
-                    ) : (
-                      <div className="flex items-center space-x-3">
+                  <div className="w-full lg:w-1/2 space-y-6 md:space-y-8">
+                    <div>
+                      <div className="inline-flex items-center gap-2 mb-3">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-medium text-white ${project.statusColor}`}
                         >
                           {project.status}
                         </span>
-                        <span className="text-sm text-gray-500 font-light">No longer accepting investments</span>
                       </div>
-                    )}
+                      <h4 className="text-3xl md:text-4xl font-light mb-3 text-gray-900">{project.name}</h4>
+                      <div className="text-gray-600 font-light mb-4">{project.location}</div>
+                      <p className="text-gray-600 font-light leading-relaxed text-base md:text-lg">{project.description}</p>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-6 md:gap-8">
+                      <div>
+                        <div className="text-2xl font-light text-primary mb-1">{project.irr}</div>
+                        <div className="text-[11px] md:text-xs text-gray-500 font-light tracking-wider">ACHIEVED IRR</div>
+                      </div>
+                      <div>
+                        <div className="text-lg font-light text-gray-900 mb-1">{project.investment}</div>
+                        <div className="text-[11px] md:text-xs text-gray-500 font-light tracking-wider">MIN INVESTMENT</div>
+                      </div>
+                      <div>
+                        <div className="text-lg font-light text-gray-900 mb-1">{project.timeline}</div>
+                        <div className="text-[11px] md:text-xs text-gray-500 font-light tracking-wider">TIMELINE</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 pt-2">
+                      <span className="text-sm text-gray-500 font-light">No longer accepting investments</span>
+                      <Button asChild variant="outline" className="bg-transparent">
+                        <a
+                          href={project.detailUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`View details for ${project.name}`}
+                        >
+                          View Details <ExternalLink className="ml-2 h-4 w-4" />
+                        </a>
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
+
         </div>
       </section>
 
-      {/* Investor Journey Section */}
+      {/* Investor Journey */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -476,30 +586,23 @@ export default function DubaiInvestmentLanding() {
                   const IconComponent = item.icon
                   return (
                     <div key={item.step} className="relative">
-                      {/* Mobile Timeline Line */}
                       {index < investorJourney.length - 1 && (
                         <div className="absolute left-8 top-20 w-0.5 h-16 bg-gradient-to-b from-primary to-accent lg:hidden" />
                       )}
 
                       <Card className="relative bg-card/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-2 border-transparent hover:border-primary/20">
                         <CardContent className="pt-6 text-center">
-                          {/* Step Number */}
                           <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center text-white font-bold text-sm">
                             {item.step}
                           </div>
 
-                          {/* Icon */}
-                          <div
-                            className={`w-16 h-16 ${item.bgColor} rounded-full flex items-center justify-center mx-auto mb-4`}
-                          >
+                          <div className={`w-16 h-16 ${item.bgColor} rounded-full flex items-center justify-center mx-auto mb-4`}>
                             <IconComponent className={`h-8 w-8 ${item.color}`} />
                           </div>
 
-                          {/* Content */}
                           <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
                           <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
 
-                          {/* Arrow for larger screens */}
                           {index < investorJourney.length - 1 && (
                             <div className="absolute top-1/2 -right-4 transform -translate-y-1/2 hidden lg:block">
                               <ArrowRight className="h-6 w-6 text-primary" />
@@ -513,7 +616,6 @@ export default function DubaiInvestmentLanding() {
               </div>
             </div>
 
-            {/* CTA Button */}
             <div className="text-center mt-12">
               <Button variant="outline" size="lg" className="bg-accent hover:bg-accent/90 text-lg px-8" onClick={handleApplyNow}>
                 Start Your Investment Journey
@@ -524,6 +626,7 @@ export default function DubaiInvestmentLanding() {
         </div>
       </section>
 
+      {/* ROI */}
       <section id="roi" className="relative py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl">
@@ -538,7 +641,7 @@ export default function DubaiInvestmentLanding() {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Features */}
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -600,7 +703,7 @@ export default function DubaiInvestmentLanding() {
         </div>
       </section>
 
-      {/* FAQ Section */}
+      {/* FAQ */}
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
@@ -611,205 +714,191 @@ export default function DubaiInvestmentLanding() {
               </p>
             </div>
             <Accordion type="single" collapsible className="space-y-4">
-  {[
-    { v: "item-1", q: "What is the minimum investment amount?", a: "The minimum investment amount is AED 50,000..." },
-    { v: "item-2", q: "How is the 20.8% IRR target calculated?", a: "The target IRR is based on conservative market projections..." },
-    { v: "item-3", q: "What protections are in place for investors?", a: "We use a DIFC SPV structure, escrow accounts..." },
-    { v: "item-4", q: "What is the expected investment timeline?", a: "24–36 months from initial investment to exit..." },
-    { v: "item-5", q: "Can international investors participate?", a: "Yes. Our DIFC structure accommodates global participation..." },
-  ].map(({ v, q, a }) => (
-    <AccordionItem
-      key={v}
-      value={v}
-      className="rounded-2xl border bg-card shadow-sm transition-all hover:shadow-md overflow-hidden"
-    >
-      <AccordionTrigger className="px-6 py-4 text-left aria-expanded:font-medium data-[state=open]:text-foreground">
-        <span className="flex-1">{q}</span>
-        <span className="transition-transform duration-200 data-[state=open]:rotate-180" />
-      </AccordionTrigger>
-
-      {/* animated content; keep overflow-hidden for clean rounded corners */}
-      <AccordionContent className="px-6 pb-5 text-muted-foreground leading-relaxed overflow-hidden">
-        {a}
-      </AccordionContent>
-    </AccordionItem>
-  ))}
-</Accordion>
+              {[
+                { v: "item-1", q: "What is the minimum investment amount?", a: "The minimum investment amount is AED 50,000..." },
+                { v: "item-2", q: "How is the 20.8% IRR target calculated?", a: "The target IRR is based on conservative market projections..." },
+                { v: "item-3", q: "What protections are in place for investors?", a: "We use a DIFC SPV structure, escrow accounts..." },
+                { v: "item-4", q: "What is the expected investment timeline?", a: "24–36 months from initial investment to exit..." },
+                { v: "item-5", q: "Can international investors participate?", a: "Yes. Our DIFC structure accommodates global participation..." },
+              ].map(({ v, q, a }) => (
+                <AccordionItem
+                  key={v}
+                  value={v}
+                  className="rounded-2xl border bg-card shadow-sm transition-all hover:shadow-md overflow-hidden"
+                >
+                  <AccordionTrigger className="px-6 py-4 text-left aria-expanded:font-medium data-[state=open]:text-foreground">
+                    <span className="flex-1">{q}</span>
+                    <span className="transition-transform duration-200 data-[state=open]:rotate-180" />
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-5 text-muted-foreground leading-relaxed overflow-hidden">
+                    {a}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </div>
         </div>
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 bg-muted/30">
-  <div className="container mx-auto px-4">
-    <div className="max-w-4xl mx-auto text-center">
-      <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-        Secure Your Dubai South G 6 Position Today
-      </h2>
+      <section className="py-20 bg-muted/30" id="contact">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-6">
+              Secure Your Dubai South G 6 Position Today
+            </h2>
 
-      <p className="text-xl text-muted-foreground mb-8">
-        Only 20 investment positions available in this exclusive Dubai South G 6 development opportunity.
-      </p>
+            <p className="text-xl text-muted-foreground mb-8">
+              Only 20 investment positions available in this exclusive Dubai South G 6 development opportunity.
+            </p>
 
-      <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-        {/* Primary CTA */}
-        <Button
-          variant="outline"
-          size="lg"
-          className="bg-accent hover:bg-accent/90 text-lg px-8"
-          onClick={handleApplyNow}
-          aria-label="Apply for investment in Dubai South G 6"
-          data-analytics="cta-apply-investment"
-        >
-          Apply for Investment
-        </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+              <Button
+                variant="outline"
+                size="lg"
+                className="bg-accent hover:bg-accent/90 text-lg px-8"
+                onClick={handleApplyNow}
+                aria-label="Apply for investment in Dubai South G 6"
+                data-analytics="cta-apply-investment"
+              >
+                Apply for Investment
+              </Button>
 
-        {/* Call CTA */}
+              <Button asChild variant="outline" size="lg" className="text-lg px-8 bg-transparent">
+                <a
+                  href="https://wa.me/97180064732"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Chat on WhatsApp at  800 MIRFA"
+                  data-analytics="cta-whatsapp"
+                >
+                  Chat on WhatsApp
+                </a>
+              </Button>
+            </div>
 
+            {/* Contact strip */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-muted-foreground">
+              <div className="flex items-center justify-center space-x-2">
+                <Phone className="h-4 w-4" aria-hidden="true" />
+                <a
+                  href="tel:+97180064732"
+                  className="hover:underline"
+                  aria-label="Call 800 MIRFA"
+                  data-analytics="contact-phone"
+                >
+                  800 MIRFA (64732)
+                </a>
+              </div>
 
-        {/* WhatsApp CTA (optional but recommended) */}
-        <Button
-          asChild
-          variant="outline"
-          size="lg"
-          className="text-lg px-8 bg-transparent"
-        >
-          <a
-            href="https://wa.me/97180064732"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Chat on WhatsApp at  800 MIRFA"
-            data-analytics="cta-whatsapp"
-          >
-            Chat on WhatsApp
-          </a>
-        </Button>
-      </div>
+              <div className="flex items-center justify-center space-x-2">
+                <Mail className="h-4 w-4" aria-hidden="true" />
+                <a
+                  href="mailto:invest@mirfa.com"
+                  className="hover:underline"
+                  aria-label="Email invest@mirfa.com"
+                  data-analytics="contact-email"
+                >
+                  invest@mirfa.com
+                </a>
+              </div>
 
-      {/* Contact strip */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-muted-foreground">
-        <div className="flex items-center justify-center space-x-2">
-          <Phone className="h-4 w-4" aria-hidden="true" />
-          <a
-            href="tel:+97180064732"
-            className="hover:underline"
-            aria-label="Call 800 MIRFA"
-            data-analytics="contact-phone"
-          >
-            800 MIRFA (64732)
-          </a>
-        </div>
-
-        <div className="flex items-center justify-center space-x-2">
-          <Mail className="h-4 w-4" aria-hidden="true" />
-          <a
-            href="mailto:invest@mirfa.com"
-            className="hover:underline"
-            aria-label="Email invest@mirfa.com"
-            data-analytics="contact-email"
-          >
-            invest@mirfa.com
-          </a>
-        </div>
-
-        <div className="flex items-center justify-center space-x-2">
-          <MapPin className="h-4 w-4" aria-hidden="true" />
-          <a
-            href="https://www.google.com/maps/search/?api=1&query=DIFC,+Dubai,+UAE"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:underline"
-            aria-label="Open location in Google Maps: DIFC, Dubai, UAE"
-            data-analytics="contact-map"
-          >
-            DIFC, Dubai, UAE
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<footer className="bg-gray-900 text-white py-16">
-  <div className="container mx-auto px-6">
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-      
-      {/* Brand */}
-      <div>
-        <div className="flex items-center space-x-3 mb-6">
-          <div className="w-8 h-8 bg-primary rounded-sm flex items-center justify-center">
-            <span className="text-black font-bold text-sm">M</span>
-          </div>
-          <div className="flex items-center">
-            <img src="images/logo.png" alt="Mirfa Logo" className="h-8" />
+              <div className="flex items-center justify-center space-x-2">
+                <MapPin className="h-4 w-4" aria-hidden="true" />
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=DIFC,+Dubai,+UAE"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                  aria-label="Open location in Google Maps: DIFC, Dubai, UAE"
+                  data-analytics="contact-map"
+                >
+                  DIFC, Dubai, UAE
+                </a>
+              </div>
+            </div>
           </div>
         </div>
-        <p className="text-gray-400 font-light leading-relaxed">
-          G6 Dubai South development – Exclusive real estate investment
-          opportunity in Dubai&apos;s premier business district.
-        </p>
-      </div>
+      </section>
 
-      {/* Investment */}
-      <div>
-        <h4 className="font-medium mb-6 tracking-wider text-sm">INVESTMENT</h4>
-        <ul className="space-y-3 text-gray-400 font-light text-sm">
-          <li><a href="#investment" className="hover:text-white">Minimum Investment</a></li>
-          <li><a href="#returns" className="hover:text-white">Target Returns</a></li>
-          <li><a href="#timeline" className="hover:text-white">Investment Timeline</a></li>
-          <li><a href="#risk" className="hover:text-white">Risk Factors</a></li>
-        </ul>
-      </div>
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-16">
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+            {/* Brand */}
+            <div>
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-8 h-8 bg-primary rounded-sm flex items-center justify-center">
+                  <span className="text-black font-bold text-sm">M</span>
+                </div>
+                <div className="flex items-center">
+                  <img src="images/logo.png" alt="Mirfa Logo" className="h-8" />
+                </div>
+              </div>
+              <p className="text-gray-400 font-light leading-relaxed">
+                G6 Dubai South development – Exclusive real estate investment
+                opportunity in Dubai&apos;s premier business district.
+              </p>
+            </div>
 
-      {/* Legal */}
-      <div>
-        <h4 className="font-medium mb-6 tracking-wider text-sm">LEGAL</h4>
-        <ul className="space-y-3 text-gray-400 font-light text-sm">
-          <li><a href="/regulation" className="hover:text-white">DIFC Regulation</a></li>
-          <li><a href="/terms" className="hover:text-white">Terms &amp; Conditions</a></li>
-          <li><a href="/privacy" className="hover:text-white">Privacy Policy</a></li>
-          <li><a href="/compliance" className="hover:text-white">Compliance</a></li>
-        </ul>
-      </div>
+            {/* Investment */}
+            <div>
+              <h4 className="font-medium mb-6 tracking-wider text-sm">INVESTMENT</h4>
+              <ul className="space-y-3 text-gray-400 font-light text-sm">
+                <li><a href="#investment" className="hover:text-white">Minimum Investment</a></li>
+                <li><a href="#returns" className="hover:text-white">Target Returns</a></li>
+                <li><a href="#timeline" className="hover:text-white">Investment Timeline</a></li>
+                <li><a href="#risk" className="hover:text-white">Risk Factors</a></li>
+              </ul>
+            </div>
 
-      {/* Contact */}
-      <div>
-        <h4 className="font-medium mb-6 tracking-wider text-sm">CONTACT</h4>
-        <ul className="space-y-3 text-gray-400 font-light text-sm">
-          <li>
-            <a href="tel:+97180064732" className="hover:text-white" aria-label="Call  800 MIRFA">
-              800 MIRFA (64732)
-            </a>
-          </li>
-          <li>
-            <a href="mailto:invest@mirfa.com" className="hover:text-white" aria-label="Email invest@mirfa.com">
-              invest@mirfa.com
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://www.google.com/maps/search/?api=1&query=DIFC,+Dubai,+UAE"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white"
-              aria-label="Open DIFC Dubai UAE on Google Maps"
-            >
-              DIFC, Dubai, UAE
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
+            {/* Legal */}
+            <div>
+              <h4 className="font-medium mb-6 tracking-wider text-sm">LEGAL</h4>
+              <ul className="space-y-3 text-gray-400 font-light text-sm">
+                <li><a href="/regulation" className="hover:text-white">DIFC Regulation</a></li>
+                <li><a href="/terms" className="hover:text-white">Terms &amp; Conditions</a></li>
+                <li><a href="/privacy" className="hover:text-white">Privacy Policy</a></li>
+                <li><a href="/compliance" className="hover:text-white">Compliance</a></li>
+              </ul>
+            </div>
 
-    {/* Bottom bar */}
-    <div className="border-t border-gray-800 mt-12 pt-8 text-center">
-      <p className="text-gray-500 font-light text-sm">
-        © 2025 MIRFA IBC. All rights reserved. Regulated by DIFC.
-      </p>
-    </div>
-  </div>
-</footer>
+            {/* Contact */}
+            <div>
+              <h4 className="font-medium mb-6 tracking-wider text-sm">CONTACT</h4>
+              <ul className="space-y-3 text-gray-400 font-light text-sm">
+                <li>
+                  <a href="tel:+97180064732" className="hover:text-white" aria-label="Call  800 MIRFA">
+                    800 MIRFA (64732)
+                  </a>
+                </li>
+                <li>
+                  <a href="mailto:invest@mirfa.com" className="hover:text-white" aria-label="Email invest@mirfa.com">
+                    invest@mirfa.com
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.google.com/maps/search/?api=1&query=DIFC,+Dubai,+UAE"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-white"
+                    aria-label="Open DIFC Dubai UAE on Google Maps"
+                  >
+                    DIFC, Dubai, UAE
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
 
+          <div className="border-t border-gray-800 mt-12 pt-8 text-center">
+            <p className="text-gray-500 font-light text-sm">
+              © 2025 MIRFA IBC. All rights reserved. Regulated by DIFC.
+            </p>
+          </div>
+        </div>
+      </footer>
 
       {/* Investor Onboarding Form Modal */}
       {isModalOpen && <InvestorOnboardingForm onClose={() => setIsModalOpen(false)} />}
