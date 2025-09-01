@@ -627,7 +627,7 @@ export default function DubaiInvestmentLanding() {
       </section>
 
       {/* ROI */}
-      <section id="roi" className="relative py-20">
+      <section id="investment" className="relative py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl">
             <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">Investment ROI (AED 50K–1M)</h2>
@@ -640,6 +640,8 @@ export default function DubaiInvestmentLanding() {
           </div>
         </div>
       </section>
+
+      
 
       {/* Features */}
       <section className="py-20">
@@ -821,6 +823,13 @@ export default function DubaiInvestmentLanding() {
         </div>
       </section>
 
+      <div className="border-t border-gray-800 mt-12 pt-6 text-center">
+  <p className="text-gray-500 text-xs max-w-3xl mx-auto leading-relaxed">
+    Disclaimer: This material is provided for informational purposes only and does not constitute a public 
+    offer, solicitation, or recommendation to invest. Participation is available exclusively to invited 
+    sophisticated investors in accordance with DIFC regulations.
+  </p>
+</div>
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-16">
         <div className="container mx-auto px-6">
