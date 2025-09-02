@@ -40,108 +40,108 @@ export default function DubaiInvestmentLanding() {
   const portfolioProjects = [
     {
       id: 1,
-      name: "G6 Dubai South",
-      location: "Dubai South",
+      name: "G6 – Dubai South",
+      location: "Dubai South – Residential District",
       description:
-        "Exclusive investment opportunity in Dubai's fastest-growing district featuring premium residential and commercial spaces with world-class amenities.",
+        "Planned for delivery in October 2027. Fully furnished residential units with integrated commercial spaces in Dubai’s fastest-growing district, combining modern design with world-class connectivity.",
       irr: "20.8%",
       investment: "AED 50,000",
-      timeline: "24-36 months",
+      timeline: "24–36 months",
       status: "Active Investment",
       statusColor: "bg-green-500",
       image: "/images/dubai-south-luxury-development-with-modern-archite.png",
-      features: ["Prime Dubai South Location", "Modern Amenities", "High ROI Potential", "Limited to 20 Investors"],
+      features: ["Fully Furnished Units", "Integrated Commercial", "World-Class Connectivity", "Limited to 20 Investors"],
       detailUrl: "/projects/g6-dubai-south",
     },
     {
-      id: 2,
-      name: "The Borough",
-      location: "Jumeirah Village Circle",
-      description:
-        "Premium residential development in the heart of JVC featuring modern apartments with world-class amenities and strategic location benefits.",
-      irr: "20.3%",
-      investment: "AED 50,000",
-      timeline: "24-36 months",
-      status: "Investment Closed",
-      statusColor: "bg-red-500",
-      image: "/images/the-borough-jvc-luxury-residential-development.png",
-      features: ["Prime JVC Location", "Modern Amenities", "High ROI Potential", "Proven Developer"],
-      detailUrl: "https://www.mirfa.com/the-borough",
-    },
-    {
-      id: 3,
-      name: "Numa Reserve",
-      location: "Meydan, Dubai",
-      description:
-        "Exclusive luxury development in prestigious Meydan district offering unparalleled lifestyle amenities and proximity to Dubai's racing heritage.",
-      irr: "30.3%",
-      investment: "AED 75,000",
-      timeline: "30-42 months",
-      status: "Investment Closed",
-      statusColor: "bg-red-500",
-      image: "/images/numa-reserve-meydan-luxury-development.png",
-      features: ["Meydan Prestige", "Luxury Amenities", "Racing Heritage", "Premium Location"],
-      detailUrl: "https://www.mirfa.com/numa-reserve",
-    },
-    {
-      id: 4,
-      name: "Ashton Park The Second",
-      location: "Jumeirah Village Circle",
-      description:
-        "Second phase of the successful Ashton Park development, offering enhanced design and premium finishes in Dubai's sought-after JVC community.",
-      irr: "23.6%",
-      investment: "AED 60,000",
-      timeline: "28-40 months",
-      status: "Investment Closed",
-      statusColor: "bg-red-500",
-      image: "/images/ashton-park-second-jvc-modern-apartments.png",
-      features: ["Phase 2 Enhancement", "Premium Finishes", "JVC Community", "Proven Success"],
-      detailUrl: "https://www.mirfa.com/ashton-park-the-second",
-    },
-    {
-      id: 5,
-      name: "Ashton Park Residences",
-      location: "Jumeirah Village Circle",
-      description:
-        "Flagship residential project featuring contemporary design and comprehensive amenities in one of Dubai's most vibrant communities.",
-      irr: "29.4%",
-      investment: "AED 55,000",
-      timeline: "24-36 months",
-      status: "Investment Closed",
-      statusColor: "bg-red-500",
-      image: "/images/ashton-park-residences-jvc-contemporary-design.png",
-      features: ["Contemporary Design", "Comprehensive Amenities", "Vibrant Community", "Completed Success"],
-      detailUrl: "https://www.mirfa.com/ashton-park-apartments",
-    },
-    {
-      id: 6,
-      name: "Ashton Park Townhouses",
-      location: "Jumeirah Village Circle",
-      description:
-        "Exclusive townhouse development offering spacious family homes with private gardens and premium community facilities in JVC.",
-      irr: "31.6%",
-      investment: "AED 80,000",
-      timeline: "32-44 months",
-      status: "Investment Closed",
-      statusColor: "bg-red-500",
-      image: "/images/ashton-park-townhouses-jvc-family-homes.png",
-      features: ["Spacious Family Homes", "Private Gardens", "Premium Facilities", "Exclusive Community"],
-      detailUrl: "https://www.mirfa.com/ashton-park-elegance-townhouse",
-    },
-    {
       id: 7,
-      name: "Oak by Mirfa",
+      name: "OAK – Furjan (Inaugural Project)",
       location: "Furjan, Dubai",
       description:
-        "Mirfa's inaugural UAE project featuring innovative design and sustainable living solutions in the established Furjan community.",
+        "Delivered in April 2023. MIRFA’s first UAE development, defined by innovation and forward-thinking architecture within the established Furjan community.",
       irr: "49.8%",
       investment: "AED 45,000",
-      timeline: "20-32 months",
-      status: "Investment Closed",
+      timeline: "20–32 months",
+      status: "Delivered Apr 2023",
       statusColor: "bg-red-500",
       image: "/images/oak-by-mirfa-furjan-sustainable-living.png",
       features: ["Inaugural Project", "Innovative Design", "Sustainable Living", "Established Community"],
       detailUrl: "https://www.mirfa.com/oak-by-mirfa",
+    },
+    {
+      id: 6,
+      name: "Ashton Park Townhouses – JVC",
+      location: "Jumeirah Village Circle",
+      description:
+        "Delivered in April 2025. Spacious family living with private pools, directly opposite landscaped parks, blending contemporary design with shared community facilities.",
+      irr: "31.6%",
+      investment: "AED 80,000",
+      timeline: "32–44 months",
+      status: "Delivered Apr 2025",
+      statusColor: "bg-red-500",
+      image: "/images/ashton-park-townhouses-jvc-family-homes.png",
+      features: ["Private Pools", "Opposite Parks", "Contemporary Design", "Community Facilities"],
+      detailUrl: "https://www.mirfa.com/ashton-park-elegance-townhouse",
+    },
+    {
+      id: 5,
+      name: "Ashton Park Residences – JVC",
+      location: "Jumeirah Village Circle",
+      description:
+        "Scheduled for completion in September 2025. Contemporary, fully furnished apartments, with select units featuring private plunge pools and comprehensive amenities.",
+      irr: "29.4%",
+      investment: "AED 55,000",
+      timeline: "24–36 months",
+      status: "Delivering Sep 2025",
+      statusColor: "bg-red-500",
+      image: "/images/ashton-park-residences-jvc-contemporary-design.png",
+      features: ["Fully Furnished", "Plunge Pool Options", "Comprehensive Amenities", "Vibrant Community"],
+      detailUrl: "https://www.mirfa.com/ashton-park-apartments",
+    },
+    {
+      id: 4,
+      name: "Ashton Park – The Second (JVC)",
+      location: "Jumeirah Village Circle",
+      description:
+        "Expected delivery in April 2026. Fully furnished apartments with enhanced layouts and finishes, including select units with private plunge pools.",
+      irr: "23.6%",
+      investment: "AED 60,000",
+      timeline: "28–40 months",
+      status: "Delivering Apr 2026",
+      statusColor: "bg-red-500",
+      image: "/images/ashton-park-second-jvc-modern-apartments.png",
+      features: ["Enhanced Layouts", "Premium Finishes", "Plunge Pool Options", "Refined Living"],
+      detailUrl: "https://www.mirfa.com/ashton-park-the-second",
+    },
+    {
+      id: 3,
+      name: "NUMA Reserve – Meydan District 11 (Flagship)",
+      location: "Meydan District 11, Dubai",
+      description:
+        "Set for delivery in April 2027. Flagship development defined by refined design, high-end finishes, and curated lifestyle amenities in one of Dubai’s most prestigious districts.",
+      irr: "30.3%",
+      investment: "AED 75,000",
+      timeline: "30–42 months",
+      status: "Delivering Apr 2027",
+      statusColor: "bg-red-500",
+      image: "/images/numa-reserve-meydan-luxury-development.png",
+      features: ["Flagship Quality", "High-End Finishes", "Curated Amenities", "Prestigious Address"],
+      detailUrl: "https://www.mirfa.com/numa-reserve",
+    },
+    {
+      id: 2,
+      name: "The Borough – JVC",
+      location: "Jumeirah Village Circle",
+      description:
+        "Scheduled for delivery in November 2027. Modern community of fully furnished apartments, complemented by well-designed amenities in a central JVC location.",
+      irr: "20.3%",
+      investment: "AED 50,000",
+      timeline: "24–36 months",
+      status: "Delivering Nov 2027",
+      statusColor: "bg-red-500",
+      image: "/images/the-borough-jvc-luxury-residential-development.png",
+      features: ["Fully Furnished", "Thoughtful Amenities", "Central JVC", "Modern Community"],
+      detailUrl: "https://www.mirfa.com/the-borough",
     },
   ] as const
 
@@ -341,10 +341,14 @@ export default function DubaiInvestmentLanding() {
         <div className="container mx-auto px-6">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-light mb-8 text-gray-900">Prime Location Benefits</h2>
+              <h2 className="text-4xl md:text-5xl font-light mb-8 text-gray-900">Location – Dubai South – Residential District</h2>
               <p className="text-lg text-gray-600 font-light max-w-2xl mx-auto">
-                Strategically positioned in Dubai South, the city's fastest-growing district with unmatched connectivity
-                and infrastructure
+              Strategically located in Dubai South, the city’s fastest-growing district, this development benefits
+  from unmatched connectivity and modern infrastructure. The residential district has been carefully
+  planned to provide a balanced lifestyle, combining contemporary housing, green open spaces, schools,
+  retail, and healthcare facilities. Its proximity to Al Maktoum International Airport, Expo City Dubai,
+  and the upcoming metro network makes it one of Dubai’s most promising areas for long-term growth and
+  community living.
               </p>
             </div>
 
@@ -418,7 +422,12 @@ export default function DubaiInvestmentLanding() {
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-5xl font-light mb-8 text-gray-900">Investment Portfolio</h2>
             <p className="text-lg text-gray-600 font-light max-w-2xl mx-auto">
-              Discover our exclusive real estate opportunities across Dubai's prime locations
+            Over the past several years, MIRFA has established a track record of delivering thoughtfully designed
+            communities across Dubai’s prime districts. From our inaugural project in Furjan to flagship
+            developments in Meydan and growth opportunities in Dubai South, each project reflects our commitment
+            to refined design, enduring value, and investor confidence. The portfolio below highlights completed
+            and upcoming developments that continue to shape MIRFA’s presence in Dubai’s most sought-after
+            locations.
             </p>
           </div>
 
@@ -665,8 +674,8 @@ export default function DubaiInvestmentLanding() {
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <CheckCircle className="h-12 w-12 text-accent mb-4" />
-                <CardTitle>DIFC Regulated Protection</CardTitle>
-                <CardDescription>Your funds are held in secure difc regulated until all conditions are met</CardDescription>
+                <CardTitle>DIFC Regulated Account Protection</CardTitle>
+                <CardDescription>Your funds are held in a DIFC-regulated account until all conditions are met.</CardDescription>
               </CardHeader>
             </Card>
             <Card className="hover:shadow-lg transition-shadow">
