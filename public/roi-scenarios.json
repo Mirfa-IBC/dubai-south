@@ -5,7 +5,7 @@
         "cashFlows": [
           { "date": "2025-09-01", "amountFor50k": -50000,  "note": "Initial Investment Deposit" },
           { "date": "2026-12-01", "amountFor50k":  6656.52, "note": "First Payout" },
-          { "date": "2027-10-01", "amountFor50k": 43343.48, "note": "Project Handover Principal Amount Back" },
+          { "date": "2027-10-01", "amountFor50k": 43343.48, "note": "Project complete + principal return" },
           { "date": "2028-01-01", "amountFor50k":  3527.22, "note": "Quarterly Payout" },
           { "date": "2028-04-01", "amountFor50k":  3527.22, "note": "Quarterly Payout" },
           { "date": "2028-07-01", "amountFor50k":  3527.22, "note": "Quarterly Payout" },
@@ -20,33 +20,37 @@
         "label": "Realistic",
         "cashFlows": [
           { "date": "2025-09-01", "amountFor50k": -50000,  "note": "Initial Investment Deposit" },
-          { "date": "2026-12-01", "amountFor50k":  6656.52, "note": "First Payout" },
-          { "date": "2027-10-01", "amountFor50k": 43343.48, "note": "Project Handover Principal Amount Back" },
-          { "date": "2028-01-01", "amountFor50k":  3527.22, "note": "Quarterly Payout" },
-          { "date": "2028-04-01", "amountFor50k":  3527.22, "note": "Quarterly Payout" },
-          { "date": "2028-07-01", "amountFor50k":  3527.22, "note": "Quarterly Payout" },
-          { "date": "2028-10-01", "amountFor50k":  3527.22, "note": "Quarterly Payout" },
-          { "date": "2029-01-01", "amountFor50k":  3527.22, "note": "Quarterly Payout" },
-          { "date": "2029-04-01", "amountFor50k":  3527.22, "note": "Quarterly Payout" },
-          { "date": "2029-07-01", "amountFor50k":  3527.22, "note": "Quarterly Payout" },
-          { "date": "2029-10-01", "amountFor50k":  3527.22, "note": "Final Payment" }
+
+          { "date": "2026-12-01", "amountFor50k":  6583.10,  "note": "First payout" },
+          { "date": "2027-10-01", "amountFor50k": 43416.90,  "note": "Project complete + principal return" },
+
+          { "date": "2028-01-01", "amountFor50k":  4740.00,  "note": "Quarterly payout" },
+          { "date": "2028-04-01", "amountFor50k":  4740.00,  "note": "Quarterly payout" },
+          { "date": "2028-07-01", "amountFor50k":  4740.00,  "note": "Quarterly payout" },
+          { "date": "2028-10-01", "amountFor50k":  4740.00,  "note": "Quarterly payout" },
+          { "date": "2029-01-01", "amountFor50k":  4740.00,  "note": "Quarterly payout" },
+          { "date": "2029-04-01", "amountFor50k":  4740.00,  "note": "Quarterly payout" },
+          { "date": "2029-07-01", "amountFor50k":  4740.00,  "note": "Quarterly payout" },
+          { "date": "2029-10-01", "amountFor50k":  4740.00,  "note": "Final payment" }
         ]
       },
       "optimistic": {
         "label": "Optimistic",
         "cashFlows": [
           { "date": "2025-09-01", "amountFor50k": -50000,  "note": "Initial Investment Deposit" },
-          { "date": "2026-12-01", "amountFor50k":  6656.52, "note": "First Payout" },
-          { "date": "2027-10-01", "amountFor50k": 43343.48, "note": "Project Handover Principal Amount Back" },
-          { "date": "2028-01-01", "amountFor50k":  3527.22, "note": "Quarterly Payout" },
-          { "date": "2028-04-01", "amountFor50k":  3527.22, "note": "Quarterly Payout" },
-          { "date": "2028-07-01", "amountFor50k":  3527.22, "note": "Quarterly Payout" },
-          { "date": "2028-10-01", "amountFor50k":  3527.22, "note": "Quarterly Payout" },
-          { "date": "2029-01-01", "amountFor50k":  3527.22, "note": "Quarterly Payout" },
-          { "date": "2029-04-01", "amountFor50k":  3527.22, "note": "Quarterly Payout" },
-          { "date": "2029-07-01", "amountFor50k":  3527.22, "note": "Quarterly Payout" },
-          { "date": "2029-10-01", "amountFor50k":  3527.22, "note": "Final Payment" }
-        ]
+
+        { "date": "2026-12-01", "amountFor50k":  6520.00,  "note": "First payout" },
+        { "date": "2027-10-01", "amountFor50k": 43500.00,  "note": "Project complete + principal return" },
+
+        { "date": "2028-01-01", "amountFor50k":  5900.00,  "note": "Quarterly payout" },
+        { "date": "2028-04-01", "amountFor50k":  5900.00,  "note": "Quarterly payout" },
+        { "date": "2028-07-01", "amountFor50k":  5900.00,  "note": "Quarterly payout" },
+        { "date": "2028-10-01", "amountFor50k":  5900.00,  "note": "Quarterly payout" },
+        { "date": "2029-01-01", "amountFor50k":  5900.00,  "note": "Quarterly payout" },
+        { "date": "2029-04-01", "amountFor50k":  5900.00,  "note": "Quarterly payout" },
+        { "date": "2029-07-01", "amountFor50k":  5900.00,  "note": "Quarterly payout" },
+        { "date": "2029-10-01", "amountFor50k":  5900.00,  "note": "Final payment" }
+      ]
       }
     }
   }

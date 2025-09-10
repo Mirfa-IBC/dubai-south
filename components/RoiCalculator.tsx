@@ -92,7 +92,7 @@ const COLORS: Record<ScenarioKey, string> = {
 /* -------------------- Component -------------------- */
 export default function RoiCalculator() {
   const [investmentAmount, setInvestmentAmount] = useState(50000)
-  const [view, setView] = useState<ScenarioOrAll>("realistic")
+  const [view, setView] = useState<ScenarioOrAll>("conservative")
   const [data, setData] = useState<ScenariosJSON | null>(null)
   const [error, setError] = useState<string | null>(null)
 
