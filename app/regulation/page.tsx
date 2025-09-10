@@ -12,7 +12,7 @@ export default function RegulationPage() {
       <section className="container mx-auto px-6 py-16 md:py-24">
         <h1 className="text-3xl md:text-4xl font-light text-gray-900 mb-6">DIFC Regulation</h1>
         <div className="prose prose-gray max-w-3xl mt-8">
-          <p>Add your DIFC/SPV regulatory disclosures and references.</p>
+          <a href="https://www.difc.com/">Webite-Link</a>
         </div>
       </section>
     </main>

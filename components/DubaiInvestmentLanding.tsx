@@ -726,11 +726,11 @@ export default function DubaiInvestmentLanding() {
             </div>
             <Accordion type="single" collapsible className="space-y-4">
               {[
-                { v: "item-1", q: "What is the minimum investment amount?", a: "The minimum investment amount is AED 50,000..." },
-                { v: "item-2", q: "How is the 20.8% IRR target calculated?", a: "The target IRR is based on conservative market projections..." },
-                { v: "item-3", q: "What protections are in place for investors?", a: "We use a DIFC SPV structure, escrow accounts..." },
-                { v: "item-4", q: "What is the expected investment timeline?", a: "24–36 months from initial investment to exit..." },
-                { v: "item-5", q: "Can international investors participate?", a: "Yes. Our DIFC structure accommodates global participation..." },
+                { v: "item-1", q: "What is the minimum investment amount?", a: "The minimum investment amount is AED 50,000" },
+                { v: "item-2", q: "How is the 20.8% IRR target calculated?", a: "The target IRR is based on conservative market projections" },
+                { v: "item-3", q: "What protections are in place for investors?", a: "We use a DIFC SPV structure, escrow accounts" },
+                { v: "item-4", q: "What is the expected investment timeline?", a: "24–36 months from initial investment to exit" },
+                { v: "item-5", q: "Can international investors participate?", a: "Yes. Our DIFC structure accommodates global participation" },
               ].map(({ v, q, a }) => (
                 <AccordionItem
                   key={v}
