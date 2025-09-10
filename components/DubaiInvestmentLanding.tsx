@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import RoiCalculator from "@/components/RoiCalculator"
 import InvestorOnboardingForm from "@/components/InvestorOnboardingForm"
-import { SiInstagram, SiYoutube } from '@icons-pack/react-simple-icons'
+import { SiInstagram, SiYoutube,SiWhatsapp } from '@icons-pack/react-simple-icons'
 
 
 import {
@@ -26,6 +26,8 @@ import {
   ArrowRight,
   ExternalLink,
 } from "lucide-react"
+
+const WHATSAPP_LINK = "https://wa.me/97180064732?text=Hi%20MIRFA%20team%2C%20I%27m%20interested%20in%20the%20G6%20Dubai%20South%20investment.";
 
 const SOCIAL = {
   instagram: "https://www.instagram.com/mirfaibc/",              // ← replace with your real handle
@@ -229,6 +231,36 @@ export default function DubaiInvestmentLanding() {
             >
               <SiYoutube className="h-5 w-5 text-white" />
             </a>
+
+            {/* WhatsApp (mobile icon-only) */}
+            <a
+              href={WHATSAPP_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Chat on WhatsApp at 800 MIRFA"
+              data-analytics="social-whatsapp-header-mobile"
+              title="WhatsApp"
+              className="inline-flex md:hidden h-9 w-9 items-center justify-center rounded-full
+                        bg-[#25D366] hover:bg-[#1DA851] transition text-white"
+            >
+              <SiWhatsapp className="h-5 w-5" />
+            </a>
+
+            {/* WhatsApp (desktop/tablet labeled) */}
+            <a
+              href={WHATSAPP_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Chat on WhatsApp at 800 MIRFA"
+              data-analytics="social-whatsapp-header"
+              title="WhatsApp"
+              className="hidden md:inline-flex h-9 items-center gap-2 rounded-full px-3 font-medium
+                        bg-[#25D366] hover:bg-[#1DA851] transition text-white"
+            >
+              <SiWhatsapp className="h-4 w-4" />
+              <span>WhatsApp</span>
+            </a>
+
 
             {/* Primary CTA */}
             <Button
@@ -599,7 +631,17 @@ export default function DubaiInvestmentLanding() {
                         <div className="absolute left-8 top-20 w-0.5 h-16 bg-gradient-to-b from-primary to-accent lg:hidden" />
                       )}
 
-                      <Card className="relative bg-card/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-2 border-transparent hover:border-primary/20">
+                      <Card className="relative bg-card/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-2 border-transparent hover:border-primary/20"
+                        onClick={handleApplyNow}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault()
+                            handleApplyNow()
+                          }
+                        }}
+                        tabIndex={0}
+                        data-analytics={`investor-journey-step-${item.step}`}
+                        >
                         <CardContent className="pt-6 text-center">
                           <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center text-white font-bold text-sm">
                             {item.step}
@@ -775,17 +817,22 @@ export default function DubaiInvestmentLanding() {
                 Apply for Investment
               </Button>
 
-              <Button asChild variant="outline" size="lg" className="text-lg px-8 bg-transparent">
-                <a
-                  href="https://wa.me/97180064732"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Chat on WhatsApp at  800 MIRFA"
-                  data-analytics="cta-whatsapp"
-                >
-                  Chat on WhatsApp
-                </a>
-              </Button>
+              <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="text-lg px-8 bg-[#25D366] hover:bg-[#1DA851] text-white"
+            >
+              <a
+                href={WHATSAPP_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Chat on WhatsApp at 800 MIRFA"
+                data-analytics="cta-whatsapp"
+              >
+                Chat on WhatsApp
+              </a>
+            </Button>
             </div>
 
             {/* Contact strip */}
@@ -917,6 +964,17 @@ export default function DubaiInvestmentLanding() {
           </div>
         </div>
       </footer>
+      <a
+  href={WHATSAPP_LINK}
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="WhatsApp quick chat"
+  data-analytics="fab-whatsapp"
+  className="fixed bottom-5 right-5 z-50 flex items-center justify-center rounded-full h-14 w-14
+             bg-[#25D366] hover:bg-[#1DA851] text-white shadow-lg md:hidden"
+>
+  <SiWhatsapp className="h-6 w-6" />
+</a>
 
       {/* Investor Onboarding Form Modal */}
       {isModalOpen && <InvestorOnboardingForm onClose={() => setIsModalOpen(false)} />}
