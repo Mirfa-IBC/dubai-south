@@ -61,7 +61,7 @@ export default function DubaiInvestmentLanding() {
         "Delivered in April 2023. MIRFA’s first UAE development, defined by innovation and forward-thinking architecture within the established Furjan community.",
       irr: "49.8%",
       investment: "AED 45,000",
-      timeline: "20–32 months",
+      timeline: "14 months",
       status: "Delivered Apr 2023",
       statusColor: "bg-red-500",
       image: "/images/oak-by-mirfa-furjan-sustainable-living.png",
@@ -76,7 +76,7 @@ export default function DubaiInvestmentLanding() {
         "Delivered in April 2025. Spacious family living with private pools, directly opposite landscaped parks, blending contemporary design with shared community facilities.",
       irr: "31.6%",
       investment: "AED 80,000",
-      timeline: "32–44 months",
+      timeline: "15 months",
       status: "Delivered Apr 2025",
       statusColor: "bg-red-500",
       image: "/images/ashton-park-townhouses-jvc-family-homes.png",
@@ -88,10 +88,10 @@ export default function DubaiInvestmentLanding() {
       name: "Ashton Park Residences – JVC",
       location: "Jumeirah Village Circle",
       description:
-        "Scheduled for completion in September 2025. Contemporary, fully furnished apartments, with select units featuring private plunge pools and comprehensive amenities.",
+        "Scheduled for completion in October 2025. Contemporary, fully furnished apartments, with select units featuring private plunge pools and comprehensive amenities.",
       irr: "29.4%",
-      investment: "AED 55,000",
-      timeline: "24–36 months",
+      investment: "AED 50,000",
+      timeline: "20 months",
       status: "Delivering Sep 2025",
       statusColor: "bg-red-500",
       image: "/images/ashton-park-residences-jvc-contemporary-design.png",
@@ -106,7 +106,7 @@ export default function DubaiInvestmentLanding() {
         "Expected delivery in April 2026. Fully furnished apartments with enhanced layouts and finishes, including select units with private plunge pools.",
       irr: "23.6%",
       investment: "AED 60,000",
-      timeline: "28–40 months",
+      timeline: "21 months",
       status: "Delivering Apr 2026",
       statusColor: "bg-red-500",
       image: "/images/ashton-park-second-jvc-modern-apartments.png",
@@ -120,8 +120,8 @@ export default function DubaiInvestmentLanding() {
       description:
         "Set for delivery in April 2027. Flagship development defined by refined design, high-end finishes, and curated lifestyle amenities in one of Dubai’s most prestigious districts.",
       irr: "30.3%",
-      investment: "AED 75,000",
-      timeline: "30–42 months",
+      investment: "AED 100,000",
+      timeline: "18 months",
       status: "Delivering Apr 2027",
       statusColor: "bg-red-500",
       image: "/images/numa-reserve-meydan-luxury-development.png",
@@ -136,8 +136,8 @@ export default function DubaiInvestmentLanding() {
         "Scheduled for delivery in November 2027. Modern community of fully furnished apartments, complemented by well-designed amenities in a central JVC location.",
       irr: "20.3%",
       investment: "AED 50,000",
-      timeline: "24–36 months",
-      status: "Delivering Nov 2027",
+      timeline: "28–30 months",
+      status: "Delivering Feb 2028",
       statusColor: "bg-red-500",
       image: "/images/the-borough-jvc-luxury-residential-development.png",
       features: ["Fully Furnished", "Thoughtful Amenities", "Central JVC", "Modern Community"],
@@ -476,7 +476,7 @@ export default function DubaiInvestmentLanding() {
                         </div>
                         <div>
                           <div className="text-lg font-light text-gray-900 mb-1">{project.timeline}</div>
-                          <div className="text-[11px] md:text-xs text-gray-500 font-light tracking-wider">TIMELINE</div>
+                          <div className="text-[11px] md:text-xs text-gray-500 font-light tracking-wider">DEVELOPMENT TIMELINE</div>
                         </div>
                       </div>
 

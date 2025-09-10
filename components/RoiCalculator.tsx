@@ -276,7 +276,7 @@ export default function RoiCalculator() {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mt-6 sm:mt-8">
           <Kpi label={`XIRR — ${active.label}`} value={isFinite(active.rate) ? `${(active.rate * 100).toFixed(2)}%` : "—"} />
-          <Kpi label="MOIC" value={isFinite(active.moic) ? `${active.moic.toFixed(2)}×` : "—"} />
+          <Kpi label="Multiple on Invested Capital" value={isFinite(active.moic) ? `${active.moic.toFixed(2)}×` : "—"} />
           <Kpi label="Total Invested" value={AED(active.totalIn)} />
           <Kpi label="Total Returned" value={AED(active.totalOut)} />
           <Kpi label="Net Profit" value={AED(active.net)} />
