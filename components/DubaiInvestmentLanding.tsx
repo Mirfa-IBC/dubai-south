@@ -582,7 +582,7 @@ export default function DubaiInvestmentLanding() {
                       </div>
                       <div>
                         <div className="text-lg font-light text-gray-900 mb-1">{project.timeline}</div>
-                        <div className="text-[11px] md:text-xs text-gray-500 font-light tracking-wider">TIMELINE</div>
+                        <div className="text-[11px] md:text-xs text-gray-500 font-light tracking-wider">DEVELOPMENT TIMELINE</div>
                       </div>
                     </div>
 
